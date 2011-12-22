@@ -13,8 +13,8 @@ class Mail2DB extends Sys
      */
     private $loc_pop = array(
         "host" => "{localhost:110/pop3}",
-        "user" => "mail2faxsystem",
-        "pass" => "entimenet090716");
+        "user" => "user",
+        "pass" => "pass");
 
     /**
      * Is init var
