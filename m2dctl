@@ -1,0 +1,241 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          m2dctl 
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# X-Interactive:     true
+# Short-Description: mail2db initscript
+# Description:       This file should be used to construct scripts to be
+#                    placed in /etc/init.d and /usr/sbin
+### END INIT INFO
+# 16/07/2009 Copyright Igor Moiseev
+ 
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+PWD=`pwd`
+ 
+# verbosity dirrective
+VERBOSE='--verbose'                     
+#VERBOSE=''                              # verbosity dirrective
+MODE='750'                          	 # directory mode creation
+
+# GENERAL Commands
+LN='/bin/ln'			LS='/bin/ls'
+ECHO='/bin/echo'		CP='/bin/cp'
+RM='/bin/rm'			CHMOD='/bin/chmod'
+
+# Folders
+ROOT=""                          	     # modify for production: use Root ""
+VAR=${ROOT}'/var'
+ETC=${ROOT}'/etc'
+RUN=${VAR}'/run'
+LOG=${VAR}'/log'
+SBIN=${ROOT}'/usr/sbin'
+INITD=${ETC}'/init.d'
+
+NAMEP='mail2db'
+SECR=${ROOT}'/root/security'
+CONF=${ETC}/${NAMEP}                     # Configurations folder
+LOGS=${LOG}                              # Folder for logs
+PIDS=${RUN}/${NAMEP}                     # Folder for pids
+HOME=${VAR}/${NAMEP}                     # Home folder
+USERN='mail2faxsystem'                   # User name  
+NAME='mail2db'					 	   	  # Daemon name and file name to execute
+DESC="Mail2DB daemon: "
+
+DAEMON=${HOME}/$NAME
+DAEMON_ARGS=""
+PIDFILE=${PIDS}/${NAME}.pid
+LOGFILE=${LOGS}/${NAME}.log
+SCRIPTNAME=/etc/init.d/m2dctl
+
+# Exit if the package is not installed
+[ -f "$DAEMON" ] || exit 0
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+	# Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   2 if daemon could not be started
+	
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
+		|| return 1
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- \
+		$DAEMON_ARGS  > /dev/null\
+		|| return 2
+		
+	# Add code here, if necessary, that waits for the process to be ready
+	# to handle requests from services started subsequently which depend
+	# on this one.  As a last resort, sleep for some time.
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	# Return
+	#   0 if daemon has been stopped
+	#   1 if daemon was already stopped
+	#   2 if daemon could not be stopped
+	#   other if a failure occurred
+	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE
+	RETVAL="$?"
+	[ "$RETVAL" = 2 ] && return 2
+
+	# Wait for children to finish too if this is a daemon that forks
+	# and if the daemon is only ever run from this initscript.
+	# If the above conditions are not satisfied then add some other code
+	# that waits for the process to drop all resources that could be
+	# needed by services started subsequently.  A last resort is to
+	# sleep for some time.
+	start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
+	[ "$?" = 2 ] && return 2
+
+	# Many daemons don't delete their pidfiles when they exit.
+	rm -f $PIDFILE
+	return "$RETVAL"
+}
+
+#
+# Function that sends a SIGHUP to the daemon/service
+#
+do_check() 
+{
+	#
+	# If the daemon can reload its configuration without
+	# restarting (for example, when it is sent a SIGHUP),
+	# then implement that here.
+	#
+	start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE
+   RETVAL="$?"
+   return "$RETVAL"
+}
+
+do_status() 
+{
+	# sends the SIGUSR1 to master daemon CSD
+	# and prints out the status of the processes
+
+	start-stop-daemon --stop --signal 10 --quiet --pidfile $PIDFILE
+	RETVAL="$?"
+	return "$RETVAL"
+}
+
+usage() 
+{
+	echo $DESC $NAME
+	echo "Usage: $SCRIPTNAME {start|stop|reload|restart|status|tree|log}" >&2
+	echo ""
+}
+
+case "$1" in
+
+  start)
+	log_daemon_msg "Starting $DESC" "$NAME"
+	do_start
+	case "$?" in
+		0|1) log_end_msg 0 ;;
+		2) log_end_msg 1 ;;
+	esac
+	;;
+
+  stop)
+	log_daemon_msg "Stopping $DESC" "$NAME"
+	do_stop
+	case "$?" in
+		0|1) log_end_msg 0 ;;
+		2) log_end_msg 1 ;;
+	esac
+	;;
+
+  check)
+	# crontab check "/etc/init.d/m2dctl check || /etc/init.d/m2dctl start"
+	#log_daemon_msg "Checking running status for $DESC" "$NAME"
+	do_check
+   RETVAL="$?"
+	#log_end_msg $RETVAL
+	exit $RETVAL
+	;;
+
+  restart)
+	log_daemon_msg "Restarting $DESC" "$NAME"
+	do_stop
+	case "$?" in
+  		0|1)
+			do_start
+			case "$?" in
+				0) log_end_msg 0 ;;
+				1) log_end_msg 1 ;; # Old process is still running
+				*) log_end_msg 1 ;; # Failed to start
+			esac
+		;;
+		*)
+			# Failed to stop
+			log_end_msg 1
+		;;
+	esac
+  ;;
+
+  status)
+	log_daemon_msg "Status call for $DESC" "$NAME"
+	do_status
+	case "$?" in
+		0) 
+			/bin/sleep 1
+         if [ -f "/tmp/status.tmp" ]; then
+            log_end_msg 0
+          
+            /bin/cat /tmp/status.tmp
+            $RM ${HOME}/tmp/status.tmp
+            exit 2
+         else
+            log_end_msg 1
+         fi
+		;;
+		
+		*) log_end_msg 1 ;;
+	esac
+  ;;
+  
+  tree)
+  	/usr/bin/pstree -nulap | grep mail2db
+  ;;
+  
+  log)
+  	if [ ! -f "$PIDFILE" ]; then
+  		echo "No service running"
+  		exit 2
+  	fi
+  	
+   tail -f $LOGFILE
+  ;;
+	
+  *)
+  	usage
+  	
+  	if [ ! -f "$PIDFILE" ]; then
+  		echo "No service running\n"
+  	fi
+
+	exit 3
+	;;
+esac
+
+:
