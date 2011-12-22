@@ -2,10 +2,8 @@
 /**
  * Class Sys
  * @author Igor Moiseev
- * @version 2009.1
+ * @version 2011.12
  */
-
-//require_once('/usr/local/faxfacile_system/callweaver/phpagi-2.14/phpagi.php'); // AGI
 
 class Sys
 {
@@ -52,63 +50,22 @@ class Sys
     private $isInit = false;
 
     /**
-     * Inbox faxes location
-     * @var string
-     * @access private
+     * Version 
      */
-    protected $inbox = "/usr/local/faxfacile/datas/inbox/";
+    protected $version = "0.1";
 
     /**
-     * Send fax folder
-     * @var path
-     * @access private
-     */
-    protected $send_fld = "/usr/local/faxfacile/datas/send/";
-
-    /**
-     * Folder for statistics
-     * @var string
-     */
-    protected $stat_fax_fld = '/usr/local/faxfacile/datas/stat_fax/';
-
-    /**
-     * Fax Inviati
-     * @var path
-     * @access private
-     */
-    protected $inviati_fld = "/usr/local/faxfacile/datas/inviati/";
-
-    /**
-     * Version faxfacile
-     */
-    protected $version = "1.4.5";
-
-    /**
-     * L'email dei messaggi del server Faxfacile
      * @var string
      * @access protected
      */
-    protected $admin_email = "Faxfacile <info@noreply.faxfacile.net>";
-
-    /**
-     * Array of email to be sended to admins of faxfacile
-     * @var array
-     * @access protected
-     */
-    protected $users_emails = array(
-      'network@timenet.it',
-    //'l.tronconi@timenet.it',
-    //'igor_vlad@mail.ru',
-    //'moiseev.igor@gmail.com',
-    //'paolo.visintin@gmail.com',
-    );
+    protected $admin_email = "admin@example.com";
 
     /**
      * L'email dei messaggi log
      * @var string
      * @access protected
      */
-    protected $logger_email = "entitylog@gmail.com";
+    protected $logger_email = "logger";
 
     /**
      * Limits the number of destinatari per every email
@@ -318,7 +275,7 @@ class Sys
             {
                 // log into db, MYSQL prb.
                 $this->conf = array( 'db' => $this->mdb2, 'sequence' => $this->sys_options['log_table'] . '_id' );
-                $this->logger = &Log::singleton('mdb2', 'faxserver.' . $this->sys_options['log_table'], 'ident', $this->conf);
+                $this->logger = &Log::singleton('mdb2', 'email2db.' . $this->sys_options['log_table'], 'ident', $this->conf);
 
                 set_error_handler( array($this,'errorHandler') );
                 //trigger_error('This is an information log message.', E_USER_NOTICE);
@@ -338,7 +295,7 @@ class Sys
             // Create the mail object using the Mail::factory method
             $this->rmail = Mail::factory('sendmail', $params);
 
-            //$this->logger->log("Sys::init() Init daemon mail2fax", PEAR_LOG_NOTICE );
+            $this->logger->log("Sys::init() Init daemon email2db", PEAR_LOG_NOTICE );
 
             return true;
         }
@@ -416,7 +373,7 @@ class Sys
                 array(
                'From'   => $this->admin_email,
                'To'     => $this->logger_email,
-               'Subject'=> 'FAX FACILE: DB error'),
+               'Subject'=> 'Email2DB: DB error'),
                "[DB error]: " . $err_msg . "\n" .
                "[DB error query]:\n" . $query
                 );
@@ -442,7 +399,7 @@ class Sys
                 array(
                'From'   => $this->admin_email,
                'To'     => $this->logger_email,
-               'Subject'=> 'FAX FACILE: DB error'),
+               'Subject'=> 'Email2DB: DB error'),
                "[DB error]: " . $err_msg . "\n" .
                "[DB error query]:\n" . $query
                 );
@@ -562,7 +519,7 @@ class Sys
         array(
 				'From'   => $this->admin_email,
 				'To'     => $this->logger_email,
-				'Subject'=> 'FAX FACILE: ' . $prefix),
+				'Subject'=> 'Email2DB: ' . $prefix),
         $prefix . $message . ' in ' . $file . ' at line ' . $line
         );
 
@@ -631,12 +588,12 @@ class Sys
     {
         // server header signature
         $body =
-            "FAX FACILE ver. $this->version" . "\n" .
+            "Email2DB ver. $this->version" . "\n" .
             "-------------------"  . "\n" .
             "\n" . $body;
 
         // server footer signature
-        $body .= "\n\nwww.faxfacile.net, " .  date(DATE_RFC822) . "\n";
+        $body .= "\n\nwww.my.net, " .  date(DATE_RFC822) . "\n";
 
         $msg =
       "Sys::sendEmail() Mail response" .
@@ -750,53 +707,6 @@ class Sys
         return $return_value;
 
     } // END FUNCTION shexec()
-
-    /**
-     * Connects to callweaver and checks the number of channels available
-     *
-     *    asterisk/callweaver -rx "show channels"
-     *
-     * @param void
-     * @return boolean
-     * @access private
-     */
-    protected function is_free_channels()
-    {
-        if($this->asm->connect("localhost","admin","entityvoip"))
-        {
-            $output = $this->asm->command("show channels");
-
-            if(strlen($output['data'])>0)
-            {
-                $outstr = explode("\n",$output['data']);
-
-                if(count($outstr)>0)
-                {
-                    foreach($outstr as $o)
-                    {
-                        $pos_active = strpos($o,"active channel");
-
-                        if(!($pos_active === false))
-                        {
-                            $tmp = explode(" ",$o);
-                            $this->active_channels = $tmp[0];
-
-                            if(ctype_digit($this->active_channels) && intval($this->active_channels) < $this->max_channels) {
-                                $this->active_channels = intval($this->active_channels);
-                                $this->free_channels = $this->max_channels - $this->active_channels;
-                                return true;
-                            }
-                        }
-                    } // END FOREACH
-                } // END IF count $outstr
-            } // END IF ($output['exit'] === 0 && strlen($output['stdout'])>0)
-            $this->logger->log("Sys::is_free_channels() All channels ($this->active_channels) on server are seemed to be occupied.", PEAR_LOG_WARNING );
-        } // END IF ($this->asm->connect("localhost","admin","entityvoip"))
-
-        $this->logger->log("Sys::is_free_channels() Error on callweaver connect.", PEAR_LOG_ERR );
-        return false;
-
-    } // END FUNCTION is_free_channels()
 
     /**
      * Pulisce nomi dei file e salva nel db

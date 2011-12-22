@@ -1,10 +1,10 @@
 <?php
 /**
- * Class Mail2DB
+ * Class Email2DB
  * @author Igor Moiseev
  */
 
-class Mail2DB extends Sys
+class Email2DB extends Sys
 {
     /**
      * Login datas for local pop account
@@ -31,7 +31,7 @@ class Mail2DB extends Sys
     private $lock_file = "/var/lock/mail2db.lock";
 
     /**
-     * List of valid formats for system Mail2Fax of Faxfacile from "mail2fax_subtype"
+     * List of valid formats for system Email2DB from "mail2db_subtype"
      * "PDF", "OCTET_STREAM", "MSWORD"
      *
      * @var array
@@ -54,14 +54,13 @@ class Mail2DB extends Sys
     private $num_msg = 0;
 
     /**
-     * An array of recieved attachements to be inserted into "faxserver.mail2fax_attachements"
+     * An array of recieved attachements to be inserted into "mail2db_attachements"
      * @access private
      * @var array
      */
     private $attachs = array();
 
     /**
-     * An array of recieved destination per fax to be inserted into "faxserver.mail2fax_destinatari"
      * @access private
      * @var array
      */
@@ -82,21 +81,21 @@ class Mail2DB extends Sys
     private $email_log_id = 0;
 
     /**
-     * The log id for the message in the mail2fax_log, buffer
+     * The log id for the message in the mail2db_log, buffer
      * @var integer
      * @access private
      */
     private $id_log = 0;
 
     /**
-     * An array of recieved emails to be inserted into "faxserver.mail2fax_emails"
+     * An array of recieved emails to be inserted into "mail2db_emails"
      * @access private
      * @var array
      */
     private $emails = array();
 
     /**
-     * Destructor of the class Mail2DB
+     * Destructor of the class Email2DB
      * @param void
      * @return boolean
      * @access public
@@ -104,7 +103,7 @@ class Mail2DB extends Sys
     public function __destruct()
     {
         if($this->isInit) {
-            $this->logger->log("Mail2DB::__destruct() Mail2DB exited", PEAR_LOG_NOTICE);
+            $this->logger->log("Email2DB::__destruct() Email2DB exited", PEAR_LOG_NOTICE);
         }
 
         if(is_file($this->lock_file)) {
@@ -123,7 +122,7 @@ class Mail2DB extends Sys
     } // END FUNCTION __destruct()
 
     /**
-     * Contructor of the class Mail2DB
+     * Contructor of the class Email2DB
      *
      * @param void
      * @return void
@@ -135,7 +134,7 @@ class Mail2DB extends Sys
     } // END FUNCTION  __construct()
 
     /**
-     * Manages the class Mail2DB
+     * Manages the class Email2DB
      *
      * @param void
      * @return boolean
@@ -143,7 +142,7 @@ class Mail2DB extends Sys
      */
     public function manage()
     {
-        if( parent::manage(array("log_table" => "mail2fax_log")) && $this->init()) {
+        if( parent::manage(array("log_table" => "mail2db_log")) && $this->init()) {
             return $this->parse_emails();
         }
 
@@ -170,26 +169,26 @@ class Mail2DB extends Sys
 
             if(is_file($this->lock_file))
             {
-                $this->logger->log("Mail2DB::init() Found lock file $this->lock_file, script make long sleep now", PEAR_LOG_ERR);
+                $this->logger->log("Email2DB::init() Found lock file $this->lock_file, script make long sleep now", PEAR_LOG_ERR);
                 $this->sendEmail(
                 $this->logger_email,
                 array(
                'From'   => $this->admin_email,
                'To'     => $this->logger_email,
-               'Subject'=> 'FAX FACILE: Errore sull\'avvio Mail2DB'),
+               'Subject'=> 'Email2DB: Errore sull\'avvio Email2DB'),
 	            "Found lock file $this->lock_file, script long sleeps now."
                 );
                 die();
                 return false;
             }
 
-            $this->logger->log("Mail2DB::init() Mail2DB started", PEAR_LOG_NOTICE);
+            $this->logger->log("Email2DB::init() Email2DB started", PEAR_LOG_NOTICE);
             touch($this->lock_file);
 
             return true;
         }
 
-        $this->logger->log("Mail2DB::init() Undefined error", PEAR_LOG_ERROR);
+        $this->logger->log("Email2DB::init() Undefined error", PEAR_LOG_ERROR);
         return false;
     } // END FUNCTION init()
 
@@ -205,7 +204,7 @@ class Mail2DB extends Sys
 
         if(false === $this->mbox)
         {
-            $this->logger->log("Mail2DB::init() Cannot connect to mailbox: " . imap_last_error(), PEAR_LOG_ERR);
+            $this->logger->log("Email2DB::init() Cannot connect to mailbox: " . imap_last_error(), PEAR_LOG_ERR);
             return false;
         }
         else
@@ -217,8 +216,8 @@ class Mail2DB extends Sys
                 array(
                'From'   => $this->admin_email,
                'To'     => $this->logger_email,
-               'Subject'=> 'FAX FACILE: Warning class Mail2DB'),
-	            "Superato numero massimo $this->warn_limit_email del'email in attesa per classe Mail2DB"
+               'Subject'=> 'Email2DB: Warning class Email2DB'),
+	            "Superato numero massimo $this->warn_limit_email del'email in attesa per classe Email2DB"
                 );
             }
 
@@ -264,15 +263,15 @@ class Mail2DB extends Sys
 
                         $this->from_email = $header->from[0]->mailbox . '@' . $header->from[0]->host;
                         $this->emails[$i] = array(
-                         "id"              => 0,                               // email id from "mail2fax_emails.id"
-                         "id_cliente"      => 0,                               // id of client from "mail2fax_emails.id_cliente"
-                         "user_id"         => 0,                               // user id from "mail2fax_emails.user_id"
+                         "id"              => 0,                               // email id from "mail2db_emails.id"
+                         "id_cliente"      => 0,                               // id of client from "mail2db_emails.id_cliente"
+                         "user_id"         => 0,                               // user id from "mail2db_emails.user_id"
                          "state_mail2db"   => 99,                              // state of email ellaboration, "99: block on email ellaboration"
-                         "email_log_id"    => $this->email_log_id,             // log id from "mail2fax_emails.email_log_id"
+                         "email_log_id"    => $this->email_log_id,             // log id from "mail2db_emails.email_log_id"
                          "message_id"      => $header->message_id,             // unique id of message from remote server
                          "multiple_attach" => false,                           // message with multiple attachements
                          "multiple_email"  => false,                           // message with multiple addresses
-                         "ins_date"        => '0000-00-00 00:00:00',           // insertion into "mail2fax_emails" date
+                         "ins_date"        => '0000-00-00 00:00:00',           // insertion into "mail2db_emails" date
                          "from_number"     => '0',                             // from the phone number
                          "from_mailbox"    => $header->from[0]->mailbox,       // mailbox name
                          "from_host"       => $header->from[0]->host,          // host of the user
@@ -327,7 +326,7 @@ class Mail2DB extends Sys
     private function check_message_id($mess_id)
     {
         $result = $this->mysqli_query_params(
-            "SELECT message_id FROM mail2fax_emails WHERE message_id = $1",
+            "SELECT message_id FROM mail2db_emails WHERE message_id = $1",
         array($mess_id)
         );
 
@@ -339,12 +338,12 @@ class Mail2DB extends Sys
             }
             elseif(mysqli_num_rows($result) == 1)
             {
-                //$this->logger->log("Mail2DB::check_message_id() WARNING: the message_id: $mess_id is already present in the DB" , PEAR_LOG_WARNING);
+                //$this->logger->log("Email2DB::check_message_id() WARNING: the message_id: $mess_id is already present in the DB" , PEAR_LOG_WARNING);
                 return false;
             }
         }
 
-        $this->logger->log("Mail2DB::check_message_id() WARNING: DB error" , PEAR_LOG_WARNING);
+        $this->logger->log("Email2DB::check_message_id() WARNING: DB error" , PEAR_LOG_WARNING);
         return false;
     } // END FUNCTION check_message_id
 
@@ -375,7 +374,7 @@ class Mail2DB extends Sys
     } // END FUNCTION process_email()
 
     /**
-     * Logs recieved emails into "faxserver.mail2fax_log_email"
+     * Logs recieved emails into "mail2db_log_email"
      *
      * @param object $header
      * @param object $structure
@@ -387,7 +386,7 @@ class Mail2DB extends Sys
         $email = imap_fetchheader($this->mbox, $i, FT_INTERNAL) . imap_body($this->mbox, $i, FT_INTERNAL);
 
         $result = $this->mysqli_query_params(
-         "INSERT INTO mail2fax_log_email
+         "INSERT INTO mail2db_log_email
             (
                header,
                structure,
@@ -403,13 +402,13 @@ class Mail2DB extends Sys
             return true;
         }
 
-        $this->logger->log("Mail2DB::log_email() WARNING: Error logging email" , PEAR_LOG_WARNING);
+        $this->logger->log("Email2DB::log_email() WARNING: Error logging email" , PEAR_LOG_WARNING);
         return false;
 
     } // END FUNCTION log_email()
 
     /**
-     * Inserts the recieved email into "faxserver.mail2fax_emails"
+     * Inserts the recieved email into "mail2db_emails"
      * @param void
      * @return boolean
      */
@@ -418,7 +417,7 @@ class Mail2DB extends Sys
         $this->emails[$i]['state_mail2db'] = 1;
 
         $result = $this->mysqli_query_params(
-         "INSERT INTO mail2fax_emails
+         "INSERT INTO mail2db_emails
             (
                email_log_id,
                message_id,
@@ -446,7 +445,7 @@ class Mail2DB extends Sys
         if(false !== $result)
         {
             $this->emails[$i]['id'] = mysqli_insert_id($this->dbconn);
-            $res = $this->mysqli_query_params("SELECT * FROM mail2fax_emails WHERE id = $1", array($this->emails[$i]['id']));
+            $res = $this->mysqli_query_params("SELECT * FROM mail2db_emails WHERE id = $1", array($this->emails[$i]['id']));
 
             if(false !== $res)
             {
@@ -454,34 +453,34 @@ class Mail2DB extends Sys
 
                 if(is_null($email[0]['user_id']))
                 {
-                    $this->logger->log("Mail2DB::insert_email() NOTICE: User error: $this->from_email (mail2fax_log_email.id: $this->email_log_id)" , PEAR_LOG_WARNING);
+                    $this->logger->log("Email2DB::insert_email() NOTICE: User error: $this->from_email (mail2db_log_email.id: $this->email_log_id)" , PEAR_LOG_WARNING);
                     $this->sendEmail(
                     $this->logger_email,
                     array(
                   'From'   => $this->admin_email,
                   'To'     => $this->logger_email,
-                  'Subject'=> "FAX FACILE: Errore Mail2DB::insert_email() NOTICE: User error: $this->from_email (mail2fax_log_email.id: $this->email_log_id)"),
-                  "Mail2DB::insert_email() NOTICE: User error: $this->from_email (mail2fax_log_email.id: $this->email_log_id). It seems that the user doesnot exist in DB."
+                  'Subject'=> "Email2DB: Errore Email2DB::insert_email() NOTICE: User error: $this->from_email (mail2db_log_email.id: $this->email_log_id)"),
+                  "Email2DB::insert_email() NOTICE: User error: $this->from_email (mail2db_log_email.id: $this->email_log_id). It seems that the user doesnot exist in DB."
                     );
 
                     if( count($this->dests)>0 && ctype_digit(implode('',$this->dests)) )
                     {
                         $testo =
-                        "Numero fax del/i destinatario/i: " . implode(', ', $this->dests) . "\n" .
+                        "Numero db del/i destinatario/i: " . implode(', ', $this->dests) . "\n" .
                         "Email del mittente: " .            $this->emails[$i]['from_email'] . "\n" .
-                        "Data invio fax: " .                date( "d/m/Y" ) . "\n" .
-                        "Ora invio fax: " .                 date( "H:i:s" ) . "\n" .
+                        "Data invio db: " .                date( "d/m/Y" ) . "\n" .
+                        "Ora invio db: " .                 date( "H:i:s" ) . "\n" .
                         "\n" .
                         "La mail da Lei inviata non è stata elaborata per l'invio poiché non è autorizzata all'invio.\n" .
                         "La preghiamo di consultare la guida e configurare le necessarie opzioni da pannello web:\n" .
-                        "http://www.faxfacile.net/docs/FAX_FACILE_GUIDA_rev_1.pdf" . "\n";
+                        "http://www.dbfacile.net/docs/db_FACILE_GUIDA_rev_1.pdf" . "\n";
 
                         $this->sendEmail(
                         $this->from_email,
                         array(
                         'From'   => $this->admin_email,
                         'To'     => $this->from_email,
-                        'Subject'=> 'FAX FACILE: invio mail2fax non accettato. Fax non inviato.'),
+                        'Subject'=> 'Email2DB: invio mail2db non accettato. db non inviato.'),
                         $testo);
                     }
 
@@ -498,13 +497,13 @@ class Mail2DB extends Sys
             }
         }
 
-        $this->logger->log("Mail2DB::insert_email() WARNING: Error ellaboration email (mail2fax_log_email.id: $this->email_log_id)" , PEAR_LOG_WARNING);
+        $this->logger->log("Email2DB::insert_email() WARNING: Error ellaboration email (mail2db_log_email.id: $this->email_log_id)" , PEAR_LOG_WARNING);
         return false;
 
     } // END FUNCTION insert_emails
 
     /**
-     * Updates the mail2fax_emails.state_db2fax
+     * Updates the mail2db_emails.state_db2db
      *
      * @param integer $i
      * @return boolean
@@ -521,28 +520,28 @@ class Mail2DB extends Sys
 
             $result = $this->mysqli_query_params("
                 SELECT
-                	count(*) AS num_active_fax
-            	FROM fetchmail_mail2fax AS fm
+                	count(*) AS num_active_db
+            	FROM fetchmail_mail2db AS fm
             	WHERE
-            			fm.mail2fax_dest_num IN ($nums)
-            		AND fm.id_mail2fax_cliente = $1
+            			fm.mail2db_dest_num IN ($nums)
+            		AND fm.id_mail2db_cliente = $1
                 	AND fm.`status` = '99'
-                	AND fm.id_mail2fax_email <> $2
+                	AND fm.id_mail2db_email <> $2
                     AND fm.insert_date > now() - INTERVAL 1 HOUR",
             array($this->emails[$i]['id_cliente'], $this->emails[$i]['id']));
 
             if(false !== $result)
             {
                 $res = $this->mysqli_fetch_all($result);
-                $num_active_fax = (int)$res[0]['num_active_fax'];
+                $num_active_db = (int)$res[0]['num_active_db'];
 
-                if($num_active_fax == 0) {
+                if($num_active_db == 0) {
                     // do_send = last_send + 60 sec + (count-1)*20
-                } elseif($num_active_fax>0) {
+                } elseif($num_active_db>0) {
                     // do_send = last_send + 20 min
-                    $secs = 1200 * $num_active_fax;
+                    $secs = 1200 * $num_active_db;
                     $resQuery=$this->mysqli_query_params("
-                            UPDATE mail2fax_emails
+                            UPDATE mail2db_emails
                             SET do_send = now() + INTERVAL $secs SECOND
                             WHERE id = $1",
                     array($this->emails[$i]['id']));
@@ -551,7 +550,7 @@ class Mail2DB extends Sys
         } // END IF $this->emails[$i]['state_mail2db'] == 0
 
         $resQuery=$this->mysqli_query_params("
-            UPDATE mail2fax_emails
+            UPDATE mail2db_emails
             SET state_mail2db = $1
             WHERE id = $2",
         array($this->emails[$i]['state_mail2db'], $this->emails[$i]['id']));
@@ -565,7 +564,7 @@ class Mail2DB extends Sys
     } // END FUNCTION update_email_status()
 
     /**
-     * Inserts the recived attachments into "faxserver.mail2fax_attachments"
+     * Inserts the recived attachments into "mail2db_attachments"
      *
      * @param $i
      * @return boolean
@@ -575,7 +574,7 @@ class Mail2DB extends Sys
         foreach($this->attachs as $key => $attach)
         {
             $result = $this->mysqli_query_params(
-             "INSERT INTO mail2fax_attachments
+             "INSERT INTO mail2db_attachments
                 (
                    email_id,
                    filename,
@@ -596,7 +595,7 @@ class Mail2DB extends Sys
 
             if(false === $result) {
                 $this->emails[$i]['state_mail2db'] = 10;
-                $this->logger->log("Mail2DB::insert_attach() WARNING: Error of DB on attachment insert (mail2fax_log_email.id: $this->email_log_id)" , PEAR_LOG_WARNING);
+                $this->logger->log("Email2DB::insert_attach() WARNING: Error of DB on attachment insert (mail2db_log_email.id: $this->email_log_id)" , PEAR_LOG_WARNING);
                 return false;
             }
         } // END FOREACH
@@ -606,7 +605,7 @@ class Mail2DB extends Sys
     } // END FUNCTION insert_attach
 
     /**
-     * Inserts the recived attachments into "faxserver.mail2fax_destinatari"
+     * Inserts the recived attachments into "mail2db_destinatari"
      * @param $i
      * @return boolean
      */
@@ -615,7 +614,7 @@ class Mail2DB extends Sys
         foreach($this->dests as $key => $dest)
         {
             $result = $this->mysqli_query_params(
-             "INSERT INTO mail2fax_destinatari
+             "INSERT INTO mail2db_destinatari
                 (
                    mail_id,
                    num
@@ -628,7 +627,7 @@ class Mail2DB extends Sys
 
             if(false === $result) {
                 $this->emails[$i]['state_mail2db'] = 11;
-                $this->logger->log("Mail2DB::insert_dests() WARNING: Error of DB on destinatari insert (mail2fax_log_email.id: $this->email_log_id)" , PEAR_LOG_WARNING);
+                $this->logger->log("Email2DB::insert_dests() WARNING: Error of DB on destinatari insert (mail2db_log_email.id: $this->email_log_id)" , PEAR_LOG_WARNING);
                 return false;
             }
         } // END FOREACH
@@ -722,12 +721,12 @@ class Mail2DB extends Sys
             if(count($this->dests)>0) {
                 return true;
             } else {
-                $this->logger->log("Mail2DB::validate_header() WARNING: No valid destinations found (mail2fax_log_email.id: $this->email_log_id)", PEAR_LOG_WARNING);
+                $this->logger->log("Email2DB::validate_header() WARNING: No valid destinations found (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_WARNING);
                 return false;
             }
         } // END IF (conditions ...
 
-        $this->logger->log("Mail2DB::validate_header() WARNING: The header of email (mail2fax_log_email.id: $this->email_log_id) is not compatible with the requested one. Conditions: " . serialize($conditions), PEAR_LOG_WARNING);
+        $this->logger->log("Email2DB::validate_header() WARNING: The header of email (mail2db_log_email.id: $this->email_log_id) is not compatible with the requested one. Conditions: " . serialize($conditions), PEAR_LOG_WARNING);
         return false;
 
     } // END FUNCTION validate_header()
@@ -766,11 +765,11 @@ class Mail2DB extends Sys
                         if(count($this->attachs)>0) {
                             return true;
                         } else {
-                            $this->logger->log("Mail2DB::validate_structure() The MIXED email without attachments (mail2fax_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
+                            $this->logger->log("Email2DB::validate_structure() The MIXED email without attachments (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
                             return false;
                         }
                     } else {
-                        $this->logger->log("Mail2DB::validate_structure() WARNING: The MIXED email without parts (mail2fax_log_email.id: $this->email_log_id)", PEAR_LOG_WARNING);
+                        $this->logger->log("Email2DB::validate_structure() WARNING: The MIXED email without parts (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_WARNING);
                         return false;
                     }
                     break;
@@ -815,7 +814,7 @@ class Mail2DB extends Sys
                                     );
 
                                 } else {
-                                    $this->logger->log("Mail2DB::validate_structure() Unsupported attribute '$value->attribute' !== 'NAME' in the email (mail2fax_log_email.id: $this->email_log_id).", PEAR_LOG_INFO);
+                                    $this->logger->log("Email2DB::validate_structure() Unsupported attribute '$value->attribute' !== 'NAME' in the email (mail2db_log_email.id: $this->email_log_id).", PEAR_LOG_INFO);
                                 }
                             } // END FOREACH ($structure->parameters as $value)
 
@@ -823,11 +822,11 @@ class Mail2DB extends Sys
                                 return true;
                             }
                         } else {
-                            $this->logger->log("Mail2DB::validate_structure() The structure of email (mail2fax_log_email.id: $this->email_log_id) is not compatible with requested one. On is_array(structure->dparameters).", PEAR_LOG_NOTICE);
+                            $this->logger->log("Email2DB::validate_structure() The structure of email (mail2db_log_email.id: $this->email_log_id) is not compatible with requested one. On is_array(structure->dparameters).", PEAR_LOG_NOTICE);
                             return false;
                         }
                     } else {
-                        //$this->logger->log("Mail2DB::validate_structure() The structure of email (mail2fax_log_email.id: $this->email_log_id) is not compatible with requested one. On strtoupper(structure->disposition) === 'INLINE'.", PEAR_LOG_INFO);
+                        //$this->logger->log("Email2DB::validate_structure() The structure of email (mail2db_log_email.id: $this->email_log_id) is not compatible with requested one. On strtoupper(structure->disposition) === 'INLINE'.", PEAR_LOG_INFO);
                         return false;
                     }
                     break;
@@ -835,7 +834,7 @@ class Mail2DB extends Sys
             } // END SWITCH (strtoupper($structure->subtype))
         } // END IF ($conditions ...
 
-        $this->logger->log("Mail2DB::validate_structure() WARNING: The structure of email (mail2fax_log_email.id: $this->email_log_id) is not compatible with requested one. Conditions: " . serialize($conditions), PEAR_LOG_WARNING);
+        $this->logger->log("Email2DB::validate_structure() WARNING: The structure of email (mail2db_log_email.id: $this->email_log_id) is not compatible with requested one. Conditions: " . serialize($conditions), PEAR_LOG_WARNING);
         return false;
 
     } // END FUNCTION validate_structure()
@@ -853,13 +852,13 @@ class Mail2DB extends Sys
 
         if(count($this->dests) > $this->warn_limit_destinatari)
         {
-            $this->logger->log("Mail2DB::validate_dests() WARNING: Superato il numero massimo $this->warn_limit_destinatari dei deistinatari per l'utente: $this->from_email, (mail2fax_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
+            $this->logger->log("Email2DB::validate_dests() WARNING: Superato il numero massimo $this->warn_limit_destinatari dei deistinatari per l'utente: $this->from_email, (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
             $this->sendEmail(
             $this->from_email,
             array(
             'From'   => $this->admin_email,
             'To'     => $this->from_email,
-            'Subject'=> 'FAX FACILE: Errore numero destinatari. Fax non inviato.'),
+            'Subject'=> 'Email2DB: Errore numero destinatari. db non inviato.'),
             "Superato il numero massimo $this->warn_limit_destinatari dei deistinatari per l'utente: $this->from_email"
             );
 
@@ -875,17 +874,17 @@ class Mail2DB extends Sys
 
                 if(!ctype_digit($dest))
                 {
-                    $this->logger->log("Mail2DB::validate_dests() Abbiamo ricevuto la richiesta del invio fax sul numero errato $dest dal email: $this->from_email", PEAR_LOG_NOTICE);
+                    $this->logger->log("Email2DB::validate_dests() Abbiamo ricevuto la richiesta del invio db sul numero errato $dest dal email: $this->from_email", PEAR_LOG_NOTICE);
 
                     $this->sendEmail(
                     $this->from_email,
                     array(
                       'From'   => $this->admin_email,
                       'To'     => $this->from_email,
-                      'Subject'=> "FAX FACILE: Errore numero fax. Il fax non e' stato inviato."),
-                      "Il sistema accetta le richieste del invio fax nel formatto: {numero_a_cui_inviare_fax}@faxfacile.net\n\n" .
-                      "Es. chiamate nazionale: 0401111111@faxfacile.net\n" .
-                      "Es. chiamate internazionale: 00390401111111@faxfacile.net\n"
+                      'Subject'=> "Email2DB: Errore numero db. Il db non e' stato inviato."),
+                      "Il sistema accetta le richieste del invio db nel formatto: {numero_a_cui_inviare_db}@dbfacile.net\n\n" .
+                      "Es. chiamate nazionale: 0401111111@dbfacile.net\n" .
+                      "Es. chiamate internazionale: 00390401111111@dbfacile.net\n"
                       );
                       $this->emails[$i]['state_mail2db'] = 6;
                       return false;
@@ -894,7 +893,7 @@ class Mail2DB extends Sys
             return true;
         } // END ELSEIF (count($this->dests)>0)
 
-        $this->logger->log("Mail2DB::validate_dests() Destinations validation failed (mail2fax_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE );
+        $this->logger->log("Email2DB::validate_dests() Destinations validation failed (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE );
         return false;
     } // END FUNCTION validate_dests()
 
@@ -909,7 +908,7 @@ class Mail2DB extends Sys
     {
         $this->emails[$i]['state_mail2db'] = 9;
 
-        $result_formats = $this->mysqli_query_params("SELECT ext, subtype FROM mail2fax_subtype WHERE is_impl = '1'");
+        $result_formats = $this->mysqli_query_params("SELECT ext, subtype FROM mail2db_subtype WHERE is_impl = '1'");
 
         if(false !== $result_formats)
         {
@@ -921,13 +920,13 @@ class Mail2DB extends Sys
 
             if(count($this->attachs) > $this->warn_limit_attachs)
             {
-                $this->logger->log("Mail2DB::validate_attachs() WARNING: Superato il numero massimo $this->warn_limit_attachs dei allegati per l'utente: $this->from_email (mail2fax_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
+                $this->logger->log("Email2DB::validate_attachs() WARNING: Superato il numero massimo $this->warn_limit_attachs dei allegati per l'utente: $this->from_email (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
                 $this->sendEmail(
                 $this->from_email,
                 array(
                'From'   => $this->admin_email,
                'To'     => $this->from_email,
-               'Subject'=> 'FAX FACILE: Errore numero allegati. Fax non inviato'),
+               'Subject'=> 'Email2DB: Errore numero allegati. db non inviato'),
 	            "Superato il numero massimo $this->warn_limit_attachs dei allegati per l'utente: $this->from_email"
                 );
 
@@ -938,23 +937,23 @@ class Mail2DB extends Sys
             {
                 foreach($this->attachs as $attach)
                 {
-                    // TODO IMPLEMENT CHECK EXTENSION on the base mail2fax_subtype
+                    // TODO IMPLEMENT CHECK EXTENSION on the base mail2db_subtype
                     // http://php.net/manual/en/function.pathinfo.php
 
                     if( !in_array(strtoupper($attach['ext']), $this->formats) )
                     {
                         $this->logger->log(
-                         "Mail2DB::validate_attachs() Abbiamo ricevuto la richiesta del invio fax (" . $attach['filename'] . ") " .
+                         "Email2DB::validate_attachs() Abbiamo ricevuto la richiesta del invio db (" . $attach['filename'] . ") " .
                          "nel formato non supportato " . $attach['subtype'] .
-                         " dal'utente: $this->from_email (mail2fax_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
+                         " dal'utente: $this->from_email (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
 
                         $this->sendEmail(
                         $this->from_email,
                         array(
                          'From'   => $this->admin_email,
                          'To'     => $this->from_email,
-                         'Subject'=> 'FAX FACILE: Errore formatto allegato. Fax non inviato.'),
-                         "Il sistema accetta documenti per l'invio via fax solo nei formatti: " .
+                         'Subject'=> 'Email2DB: Errore formatto allegato. db non inviato.'),
+                         "Il sistema accetta documenti per l'invio via db solo nei formatti: " .
     		             "TIFF, MSG, PDF, PUB, PUBX, XLSX, XLS, RTF, TIF, JPG, JPEG, BMP, CSV, DOC, DOCX, EML, GIF, ICO, J2K, JP2, JPC.\n" .
                          "Il nome del file NON deve contenere caratteri speciali o lettere accentate.\n" .
                          "Allegato: " . $attach['filename']
@@ -965,7 +964,7 @@ class Mail2DB extends Sys
 
                     if( strlen($attach['body']) <= 0 )
                     {
-                        $this->logger->log("Mail2DB::validate_attachs() We recieved the empty attach or cannot select the section: \"" . $attach['section'] . "\" from email: $this->from_email (mail2fax_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
+                        $this->logger->log("Email2DB::validate_attachs() We recieved the empty attach or cannot select the section: \"" . $attach['section'] . "\" from email: $this->from_email (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
                         $this->emails[$i]['state_mail2db'] = 8;
                         return false;
                     }
@@ -977,7 +976,7 @@ class Mail2DB extends Sys
             } // END ELSEIF
         } // END IF (false !== $result_formats)
 
-        $this->logger->log("Mail2DB::validate_attachs() Attachements validation failed (mail2fax_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE );
+        $this->logger->log("Email2DB::validate_attachs() Attachements validation failed (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE );
         return false;
     } // END FUNCTION validate_attachs()
 
@@ -1017,7 +1016,7 @@ class Mail2DB extends Sys
                         array(
                          'From'   => $this->admin_email,
                          'To'     => $this->from_email,
-                         'Subject'=> 'FAX FACILE: Errore autenticazione. Fax non inviato.'),
+                         'Subject'=> 'Email2DB: Errore autenticazione. db non inviato.'),
                          "Errore di autenticazione. Controllare il PIN dell'utente: $this->from_email"
                         );
                     }
@@ -1039,13 +1038,13 @@ class Mail2DB extends Sys
                         $this->emails[$i]['callerid'] = $res[0]['callerid'];
 
                         $result_ea = $this->mysqli_query_params(
-                            "UPDATE email_abilitate SET tot_fax = tot_fax + 1 WHERE email = $1 AND pin = $2",
+                            "UPDATE email_abilitate SET tot_db = tot_db + 1 WHERE email = $1 AND pin = $2",
                         array($email, $pin)
                         );
 
                         $res_emails = $this->mysqli_query_params(
                           "
-                             UPDATE mail2fax_emails
+                             UPDATE mail2db_emails
                              SET
                                 from_number = $1,
                                 id_cliente = $2,
@@ -1068,20 +1067,20 @@ class Mail2DB extends Sys
             } // END IF (false !== $result && mysqli_num_rows($result) === 1)
         } // END IF ( $this->isValidEmail($email) )
 
-        $this->logger->log("Mail2DB::validate_user() Authentication failed (mail2fax_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE );
+        $this->logger->log("Email2DB::validate_user() Authentication failed (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE );
         return false;
 
     } // END FUNCTION validate_user()
 
     /**
-     * Inserts into the mail2fax_log
+     * Inserts into the mail2db_log
      *
      * @param integer $i
      * @return boolean
      */
     private function insert_log()
     {
-        if( $this->logger->log('Mail2DB::insert_log() Init log', PEAR_LOG_INFO) )
+        if( $this->logger->log('Email2DB::insert_log() Init log', PEAR_LOG_INFO) )
         {
             $this->id_log = mysqli_insert_id($this->dbconn);
 
@@ -1095,7 +1094,7 @@ class Mail2DB extends Sys
     } // END FUNCTION insert_log()
 
     /**
-     * Updates the mail2fax_log
+     * Updates the mail2db_log
      *
      * @param integer $i
      * @return boolean
@@ -1110,7 +1109,7 @@ class Mail2DB extends Sys
             }
 
             $resQuery=$this->mysqli_query_params("
-            UPDATE mail2fax_log
+            UPDATE mail2db_log
             SET
                priority = $2,
                message = $3
@@ -1118,7 +1117,7 @@ class Mail2DB extends Sys
             array(
             $this->id_log,
             $priority,
-            "Mail2DB::update_log() " .
+            "Email2DB::update_log() " .
                "id_log_email: " .   $this->emails[$i]['email_log_id'] . "; " .
                "id_email: " .       $this->emails[$i]['id'] .  "; " .
                "from_email: " .     $this->emails[$i]['from_email'] .  "; " .
@@ -1134,6 +1133,6 @@ class Mail2DB extends Sys
 
     } // END FUNCTION update_log()
 
-} // END CLASS Mail2DB
+} // END CLASS Email2DB
 
 ?>
