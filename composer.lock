@@ -1,0 +1,158 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "728125e05836f8465afda60cfde359f2",
+    "packages": [
+        {
+            "name": "pear/log",
+            "version": "1.12.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pear/Log.git",
+                "reference": "dcad2e62489b66bb296965a442a7306b188ea613"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pear/Log/zipball/dcad2e62489b66bb296965a442a7306b188ea613",
+                "reference": "dcad2e62489b66bb296965a442a7306b188ea613",
+                "shasum": ""
+            },
+            "require": {
+                "pear/pear_exception": "1.0-beta1",
+                "php": ">5.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "suggest": {
+                "pear/db": "Install optionally via your project's composer.json"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Log": "./"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "include-path": [
+                ""
+            ],
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Parise",
+                    "email": "jon@php.net",
+                    "homepage": "http://www.indelible.org",
+                    "role": "Lead"
+                }
+            ],
+            "description": "PEAR Logging Framework",
+            "homepage": "http://pear.github.io/Log/",
+            "keywords": [
+                "log",
+                "logging"
+            ],
+            "time": "2014-07-12 18:46:14"
+        },
+        {
+            "name": "pear/pear_exception",
+            "version": "1.0-beta1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pear/PEAR_Exception.git",
+                "reference": "f053615c7cbdfaba5a3b7021ee58a48523b8576c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pear/PEAR_Exception/zipball/f053615c7cbdfaba5a3b7021ee58a48523b8576c",
+                "reference": "f053615c7cbdfaba5a3b7021ee58a48523b8576c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=4.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "class",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "PEAR": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "include-path": [
+                "."
+            ],
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Helgi Thormar",
+                    "email": "dufuz@php.net",
+                    "role": "Lead"
+                },
+                {
+                    "name": "Greg Beaver",
+                    "email": "cellog@php.net",
+                    "role": "Helper"
+                }
+            ],
+            "description": "The PEAR Exception base class.",
+            "homepage": "https://github.com/pear/PEAR_Exception",
+            "keywords": [
+                "exception"
+            ],
+            "time": "2014-02-21 17:29:07"
+        },
+        {
+            "name": "pear/system_daemon",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:tomglue/system_daemon.git",
+                "reference": "ae868c79312093d5b5174bbe4d93bbf1e8a11466"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tomglue/system_daemon/zipball/ae868c79312093d5b5174bbe4d93bbf1e8a11466",
+                "reference": "ae868c79312093d5b5174bbe4d93bbf1e8a11466",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "System/Daemon.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "A port of the PEAR class to create Daemons with pure PHP",
+            "time": "2013-02-26 22:44:14"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "pear/system_daemon": 20,
+        "pear/pear_exception": 10
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
