@@ -1,2 +1,4 @@
 vendor
 composer.phar
+config.php
+email2db.log
