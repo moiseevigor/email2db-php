@@ -89,12 +89,6 @@ class Sys
    */
   protected $warn_limit_attachs = 10;
 
-  /**
-   * Limits the number of email in the email box before sending warning via email
-   * @var integer
-   * @access protected
-   */
-  protected $warn_limit_email = 300;
 
   /**
    * Limits the number of calls for script execution
@@ -374,16 +368,6 @@ class Sys
         $this->logger->log("Sys::mysqli_query_params() [DB error]: " . $err_msg, PEAR_LOG_ERR );
         $this->logger->log("Sys::mysqli_query_params() [DB error query]:\n" .  $query, PEAR_LOG_INFO);
 
-        $this->sendEmail(
-          $this->logger_email,
-          array(
-           'From'   => $this->admin_email,
-           'To'     => $this->logger_email,
-           'Subject'=> 'Email2DB: DB error'),
-          "[DB error]: " . $err_msg . "\n" .
-          "[DB error query]:\n" . $query
-          );
-
         return false;
       } else {
         return $result;
@@ -399,16 +383,6 @@ class Sys
         $err_msg = mysqli_error($this->dbconn);
         $this->logger->log("Sys::mysqli_query_params() [DB error]: " . $err_msg, PEAR_LOG_ERR );
         $this->logger->log("Sys::mysqli_query_params() [DB error query]:\n" .  $query, PEAR_LOG_INFO);
-
-        $this->sendEmail(
-          $this->logger_email,
-          array(
-           'From'   => $this->admin_email,
-           'To'     => $this->logger_email,
-           'Subject'=> 'Email2DB: DB error'),
-          "[DB error]: " . $err_msg . "\n" .
-          "[DB error query]:\n" . $query
-          );
 
         return false;
       } else {
@@ -520,14 +494,6 @@ class Sys
       $priority = PEAR_LOG_INFO;
       return true;
     }
-    $this->sendEmail(
-      $this->logger_email,
-      array(
-        'From'   => $this->admin_email,
-        'To'     => $this->logger_email,
-        'Subject'=> 'Email2DB: ' . $prefix),
-      $prefix . $message . ' in ' . $file . ' at line ' . $line
-      );
 
     $this->logger->log($prefix . $message . ' in ' . $file . ' at line ' . $line, $priority);
 
@@ -570,64 +536,17 @@ class Sys
   {
     $message = $error->getMessage();
 
-    if (!empty($error->backtrace[1]['file'])) {
+    if (!empty($error->backtrace[1]['file']))
+    {
       $message .= ' (' . $error->backtrace[1]['file'];
         if (!empty($error->backtrace[1]['line'])) {
           $message .= ' at line ' . $error->backtrace[1]['line'];
         }
         $message .= ')';
-}
-
-$this->logger->log($message, $error->code);
-  } // END FUNCTION errorPearHandler()
-
-  /**
-   * Sends email
-   *
-   * @param $recipients
-   * @param $headers
-   * @param $body
-   * @return boolean
-   * @access protected
-   */
-  protected function sendEmail($recipients, $headers, $body)
-  {
-      // server header signature
-    $body =
-    "Email2DB ver. $this->version" . "\n" .
-    "-------------------"  . "\n" .
-    "\n" . $body;
-
-      // server footer signature
-    $body .= "\n\nwww.my.net, " .  date(DATE_RFC822) . "\n";
-
-    $msg =
-    "Sys::sendEmail() Mail response" .
-    "\nTo: " . $headers['To'] .
-    "\nFrom: " . $headers['From'] .
-    "\nSubject: " . $headers['Subject'] .
-    "\nBody\n" .
-    $body .
-    "\nEndBody";
-
-    $this->logger->log($msg, PEAR_LOG_INFO);
-
-    $headers["Content-Type"] = "text/plain; charset=UTF-8";
-
-    $result = $this->rmail->send($recipients, $headers, $body);
-
-    if( !PEAR::isError($result) ) {
-      return true;
-
-    } else {
-      $this->logger->log("Sys::sendEmail() [Pear error] Sys::sendEmail() " . $result->getMessage() , PEAR_LOG_ERR );
-      return false;
     }
 
-    $this->logger->log("Sys::sendEmail() Undefined error", PEAR_LOG_ERR );
-
-    return false;
-  } // END FUNCTION sendEmail()
+    $this->logger->log($message, $error->code);
+  } // END FUNCTION errorPearHandler()
 
   /**
    * Test for associative array
@@ -654,166 +573,4 @@ $this->logger->log($message, $error->code);
     return eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", $email);
   } // END FUNCTION isValidEmail()
 
-
-  /**
-   * Executes the shell command and gets stdout and stderr streams
-   *
-   * @see http://www.php.net/manual/en/function.proc-open.php
-   * @param string $cmd - command to be executed
-   * @param string $cwd - folder
-   * @param array $env - options
-   * @return array()
-   */
-  protected function shexec($cmd, $cwd = './', $env = array())
-  {
-    $return_value = array(
-       "exit"   => 1,       // exit 0 on ok
-       "stdout" => "",      // output of the command
-       "stderr" => "",      // errors during execution
-       );
-
-    $descriptorspec = array(
-      0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-      1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-      2 => array("pipe", "w")   // stderr is a pipe
-      );
-
-    $process = proc_open(escapeshellcmd($cmd), $descriptorspec, $pipes, $cwd, $env);
-      // $pipes now looks like this:
-      // 0 => writeable handle connected to child stdin
-      // 1 => readable handle connected to child stdout
-      // 2 => readable handle connected to child stderr
-
-    if (false === is_resource($process))
-    {
-      $this->logger->log("Sys::shexec() Error on proc_open, shell command \"$cmd\"" , PEAR_LOG_ERR );
-    }
-    else
-    {
-      $return_value['stdout'] = stream_get_contents($pipes[1]);
-      $return_value['stderr'] = stream_get_contents($pipes[2]);
-
-      fclose($pipes[0]);
-      fclose($pipes[1]);
-      fclose($pipes[2]);
-
-          // It is important that you close any pipes before calling
-          // proc_close in order to avoid a deadlock
-      $return_value['exit'] = proc_close($process);
-    }
-
-    if(trim($return_value['stderr']) !== "") {
-      $this->logger->log("Sys::shexec() \n\"$cmd\"\nERROR:\n" . $return_value['stderr'], PEAR_LOG_WARNING );
-    }
-
-    if(trim($return_value['stdout']) !== "") {
-          //$this->logger->log("Sys::shexec() \n\"$cmd\"\nOUTPUT:\n" . $return_value['stdout'], PEAR_LOG_NOTICE );
-    }
-
-    return $return_value;
-
-  } // END FUNCTION shexec()
-
-  /**
-   * Pulisce nomi dei file e salva nel db
-   *
-   * @param void
-   * @return boolean
-   * @access private
-   */
-  protected function urlize($string)
-  {
-      // sostituiamo tutti i caratteri speciali it "àìèòù" con "aieou".
-      // ATTENZIONE! Codifica del editor PHP dev'essere UTF8
-      // Lista caratteri speciali IT: http://italian.about.com/library/blaccentchart.htm
-    $new_string = preg_replace(array('/à|á|À|À/', '/ì|í|Ì|Ì/', '/è|é|È|É/', '/ò|ó|Ò|Ó/', '/ù|ú|Ù|Ú/'), array('a', 'i', 'e', 'o', 'u'), $string);
-      // sostituiamo tutti i caratteri che non sono alfanumerici con uno spazio
-    $new_string = ereg_replace("[^A-Za-z0-9]", " ", $new_string);
-
-      // sostituiamo qualsiasi numero con spazi consecutivi con un "-" della stringa trimmata e abbassata
-    $new_string = ereg_replace("[ ]+", "-", strtolower(trim($new_string)) );
-
-    return $new_string;
-
-  } // END FUNCTION urlize();
-
-  /**
-   * Return the database current time
-   * @return date
-   */
-  protected function get_db_currtime()
-  {
-    $now = null;
-
-    $result = $this->mysqli_query("SELECT now() AS currtime");
-
-    if(false !== $result)
-    {
-      if(mysqli_num_rows($result) == 1)
-      {
-        $res = $this->mysqli_fetch_all($result);
-        return $res[0]['currtime'];
-      }
-    }
-  } // END FUCNTION get_db_currtime()
-
-  /**
-   * Excel support functions
-   */
-  protected function xlsBOF()
-  {
-    return pack("ssssss", 0x809, 0x8, 0x0, 0x10, 0x0, 0x0);
-  }
-
-  protected function xlsEOF()
-  {
-    return pack("ss", 0x0A, 0x00);
-  }
-
-  protected function xlsWriteNumber( $Row, $Col, $Value )
-  {
-    return pack("sssss", 0x203, 14, $Row, $Col, 0x0) . pack("d", $Value);
-  }
-
-  protected function xlsWriteLabel( $Row, $Col, $Value )
-  {
-    $L = strlen( $Value );
-    return pack("ssssss", 0x204, 8 + $L, $Row, $Col, 0x0, $L) . $Value;
-  }
-
-  /**
-    * Return human readable sizes
-    *
-    * @author      Aidan Lister <aidan@php.net>
-    * @version     1.3.0
-    * @link        http://aidanlister.com/2004/04/human-readable-file-sizes/
-    * @param       int     $size        size in bytes
-    * @param       string  $max         maximum unit
-    * @param       string  $system      'si' for SI, 'bi' for binary prefixes
-    * @param       string  $retstring   return string format
-    */
-   function size_readable($size, $max = null, $system = 'si', $retstring = '%01.2f %s')
-   {
-      // Pick units
-    $systems['si']['prefix'] = array('B', 'K', 'MB', 'GB', 'TB', 'PB');
-    $systems['si']['size']   = 1000;
-    $systems['bi']['prefix'] = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB');
-    $systems['bi']['size']  = 1024;
-    $sys = isset($systems[$system]) ? $systems[$system] : $systems['si'];
-
-      // Max unit to display
-    $depth = count($sys['prefix']) - 1;
-    if ($max && false !== $d = array_search($max, $sys['prefix'])) {
-      $depth = $d;
-    }
-
-      // Loop
-    $i = 0;
-    while ($size >= $sys['size'] && $i < $depth) {
-      $size /= $sys['size'];
-      $i++;
-    }
-
-    return sprintf($retstring, $size, $sys['prefix'][$i]);
-  }
 } // END CLASS Sys

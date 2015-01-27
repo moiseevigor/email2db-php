@@ -3,7 +3,6 @@
  * Class Email2DB
  * @author Igor Moiseev
  *
- *
  *   Copyright (C) 2011 Igor Moiseev
  *
  *   This program is free software: you can redistribute it and/or modify
@@ -186,14 +185,6 @@ class Email2DB extends Sys
       if(is_file($this->lock_file))
       {
         $this->logger->log("Email2DB::init() Found lock file $this->lock_file, script make long sleep now", PEAR_LOG_ERR);
-        $this->sendEmail(
-          $this->logger_email,
-          array(
-           'From'   => $this->admin_email,
-           'To'     => $this->logger_email,
-           'Subject'=> 'Email2DB: Errore sull\'avvio Email2DB'),
-          "Found lock file $this->lock_file, script long sleeps now."
-          );
         die();
         return false;
       }
@@ -226,17 +217,6 @@ class Email2DB extends Sys
     else
     {
       $this->num_msg = imap_num_msg($this->mbox);
-      if($this->num_msg >= $this->warn_limit_email) {
-        $this->sendEmail(
-          $this->logger_email,
-          array(
-           'From'   => $this->admin_email,
-           'To'     => $this->logger_email,
-           'Subject'=> 'Email2DB: Warning class Email2DB'),
-          "Superato numero massimo $this->warn_limit_email del'email in attesa per classe Email2DB"
-          );
-      }
-
       return true;
     }
   } // END FUNCTION init_imap()
@@ -470,35 +450,6 @@ class Email2DB extends Sys
         if(is_null($email[0]['user_id']))
         {
           $this->logger->log("Email2DB::insert_email() NOTICE: User error: $this->from_email (mail2db_log_email.id: $this->email_log_id)" , PEAR_LOG_WARNING);
-          $this->sendEmail(
-            $this->logger_email,
-            array(
-              'From'   => $this->admin_email,
-              'To'     => $this->logger_email,
-              'Subject'=> "Email2DB: Errore Email2DB::insert_email() NOTICE: User error: $this->from_email (mail2db_log_email.id: $this->email_log_id)"),
-            "Email2DB::insert_email() NOTICE: User error: $this->from_email (mail2db_log_email.id: $this->email_log_id). It seems that the user doesnot exist in DB."
-            );
-
-          if( count($this->dests)>0 && ctype_digit(implode('',$this->dests)) )
-          {
-            $testo =
-            "Numero db del/i destinatario/i: " . implode(', ', $this->dests) . "\n" .
-            "Email del mittente: " .            $this->emails[$i]['from_email'] . "\n" .
-            "Data invio db: " .                date( "d/m/Y" ) . "\n" .
-            "Ora invio db: " .                 date( "H:i:s" ) . "\n" .
-            "\n" .
-            "La mail da Lei inviata non è stata elaborata per l'invio poiché non è autorizzata all'invio.\n" .
-            "La preghiamo di consultare la guida e configurare le necessarie opzioni da pannello web:\n" .
-            "http://www.dbfacile.net/docs/db_FACILE_GUIDA_rev_1.pdf" . "\n";
-
-            $this->sendEmail(
-              $this->from_email,
-              array(
-                'From'   => $this->admin_email,
-                'To'     => $this->from_email,
-                'Subject'=> 'Email2DB: invio mail2db non accettato. db non inviato.'),
-              $testo);
-          }
 
           $this->emails[$i]['state_mail2db'] = 3;
 
@@ -869,14 +820,6 @@ class Email2DB extends Sys
     if(count($this->dests) > $this->warn_limit_destinatari)
     {
       $this->logger->log("Email2DB::validate_dests() WARNING: Superato il numero massimo $this->warn_limit_destinatari dei deistinatari per l'utente: $this->from_email, (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
-      $this->sendEmail(
-        $this->from_email,
-        array(
-          'From'   => $this->admin_email,
-          'To'     => $this->from_email,
-          'Subject'=> 'Email2DB: Errore numero destinatari. db non inviato.'),
-        "Superato il numero massimo $this->warn_limit_destinatari dei deistinatari per l'utente: $this->from_email"
-        );
 
       $this->emails[$i]['state_mail2db'] = 5;
       return false;
@@ -892,16 +835,6 @@ class Email2DB extends Sys
         {
           $this->logger->log("Email2DB::validate_dests() Abbiamo ricevuto la richiesta del invio db sul numero errato $dest dal email: $this->from_email", PEAR_LOG_NOTICE);
 
-          $this->sendEmail(
-            $this->from_email,
-            array(
-              'From'   => $this->admin_email,
-              'To'     => $this->from_email,
-              'Subject'=> "Email2DB: Errore numero db. Il db non e' stato inviato."),
-            "Il sistema accetta le richieste del invio db nel formatto: {numero_a_cui_inviare_db}@dbfacile.net\n\n" .
-            "Es. chiamate nazionale: 0401111111@dbfacile.net\n" .
-            "Es. chiamate internazionale: 00390401111111@dbfacile.net\n"
-            );
           $this->emails[$i]['state_mail2db'] = 6;
           return false;
         }
@@ -934,27 +867,12 @@ class Email2DB extends Sys
         $this->formats[] = $form['ext'];
       }
 
-      if(count($this->attachs) > $this->warn_limit_attachs)
-      {
-        $this->logger->log("Email2DB::validate_attachs() WARNING: Superato il numero massimo $this->warn_limit_attachs dei allegati per l'utente: $this->from_email (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
-        $this->sendEmail(
-          $this->from_email,
-          array(
-           'From'   => $this->admin_email,
-           'To'     => $this->from_email,
-           'Subject'=> 'Email2DB: Errore numero allegati. db non inviato'),
-          "Superato il numero massimo $this->warn_limit_attachs dei allegati per l'utente: $this->from_email"
-          );
-
-        $this->emails[$i]['state_mail2db'] = 7;
-        return false;
-      }
-      elseif(count($this->attachs)>0)
+      if(count($this->attachs)>0)
       {
         foreach($this->attachs as $attach)
         {
-                  // TODO IMPLEMENT CHECK EXTENSION on the base mail2db_subtype
-                  // http://php.net/manual/en/function.pathinfo.php
+          // TODO IMPLEMENT CHECK EXTENSION on the base mail2db_subtype
+          // http://php.net/manual/en/function.pathinfo.php
 
           if( !in_array(strtoupper($attach['ext']), $this->formats) )
           {
@@ -963,17 +881,6 @@ class Email2DB extends Sys
              "nel formato non supportato " . $attach['subtype'] .
              " dal'utente: $this->from_email (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE);
 
-            $this->sendEmail(
-              $this->from_email,
-              array(
-               'From'   => $this->admin_email,
-               'To'     => $this->from_email,
-               'Subject'=> 'Email2DB: Errore formatto allegato. db non inviato.'),
-              "Il sistema accetta documenti per l'invio via db solo nei formatti: " .
-              "TIFF, MSG, PDF, PUB, PUBX, XLSX, XLS, RTF, TIF, JPG, JPEG, BMP, CSV, DOC, DOCX, EML, GIF, ICO, J2K, JP2, JPC.\n" .
-              "Il nome del file NON deve contenere caratteri speciali o lettere accentate.\n" .
-              "Allegato: " . $attach['filename']
-              );
             $this->emails[$i]['state_mail2db'] = 8;
             return false;
           }
@@ -985,15 +892,15 @@ class Email2DB extends Sys
             return false;
           }
 
-              } // END FORECH ($this->attachs as $attach)
+        } // END FORECH ($this->attachs as $attach)
 
-              return true;
+        return true;
 
-          } // END ELSEIF
-      } // END IF (false !== $result_formats)
+      } // END ELSEIF
+    } // END IF (false !== $result_formats)
 
-      $this->logger->log("Email2DB::validate_attachs() Attachements validation failed (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE );
-      return false;
+    $this->logger->log("Email2DB::validate_attachs() Attachements validation failed (mail2db_log_email.id: $this->email_log_id)", PEAR_LOG_NOTICE );
+    return false;
   } // END FUNCTION validate_attachs()
 
   /**
@@ -1024,18 +931,6 @@ class Email2DB extends Sys
             "SELECT * FROM email_abilitate WHERE email = $1",
             array($email)
             );
-
-          if(false !== $result_email && mysqli_num_rows($result_email) === 1)
-          {
-            $this->sendEmail(
-              $this->from_email,
-              array(
-               'From'   => $this->admin_email,
-               'To'     => $this->from_email,
-               'Subject'=> 'Email2DB: Errore autenticazione. db non inviato.'),
-              "Errore di autenticazione. Controllare il PIN dell'utente: $this->from_email"
-              );
-          }
         }
         elseif(mysqli_num_rows($result) === 1)
         {
