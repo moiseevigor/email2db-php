@@ -1,10 +1,12 @@
 # Email2DB 
 
-Email2DB intends to convert the email schema into the relational schema
+Email2DB parses the email schema into the relational schema.
 
 ## Installation procedure
 
-### System level installation procedure
+We assume the Ubuntu 12.04 and later here on.
+
+### System-wide installation procedure
 
 Install IMAP extension
 
@@ -12,20 +14,25 @@ Install IMAP extension
 sudo apt-get install php5-imap
 ```
 
-Enable IMAP extnsions (creates symlink in `/etc/php5/cli/conf.d/`) 
+Enable IMAP extensions (creates symlink in `/etc/php5/cli/conf.d/`) 
 
 ```
 sudo php5enmod imap
 ```
 
-Mailparse installation on Ubuntu 12.04 and later
+Mailparse installation 
+
 ```
 sudo apt-get install php5-dev
 ```
 
+Compiling `mailparse`
+
 ```
 sudo pecl install mailparse
 ```
+
+And enabling it
 
 ```
 echo "extension=mailparse.so" > /etc/php5/mods-available/mailparse.ini
@@ -35,7 +42,7 @@ echo "extension=mailparse.so" > /etc/php5/mods-available/mailparse.ini
 sudo php5enmod mailparse
 ```
 
-### Project level installation procedure
+### Project-wide installation procedure
 
 Install composer 
 
@@ -49,9 +56,9 @@ Next install all necessary packages
 ./composer.phar install
 ```
 
-No errors should be in output, if it appears some please check the previous step. 
+No errors should be in the output, if there appear some, please check the previous step. 
 
-Check out the configuration
+Now check out the configuration
 
 ```
 $ ./composer.phar show -p | grep -E "imap|mail"
