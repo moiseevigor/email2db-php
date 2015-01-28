@@ -19,16 +19,14 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// error_reporting(E_ALL ^ E_NOTICE);
-error_reporting(E_ALL ^ E_STRICT);
+error_reporting(E_ALL);
 
 $config = require_once('config.php');
 
 // composer autoloader
 require_once('vendor/autoload.php');
-require_once('src/Sys.php');
-require_once('src/Email2DB.php');
 
+// main instance
 $email2db = new Email2DB();
 
 // define the file permissions to 644
@@ -44,6 +42,8 @@ $options = array_merge($config['daemon'], array(
   "appDir"      => $userinfo["dir"] . "/",
   "appRunAsUID" => $userinfo["uid"],
   "appRunAsGID" => $userinfo["gid"],
+  "logLocation"           => "/var/log/email2db.log",
+  "appPidLocation"        => "/var/run/email2db/email2db.pid"
   ));
 System_Daemon::setOptions($options);
 

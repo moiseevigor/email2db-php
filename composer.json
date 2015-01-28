@@ -1,12 +1,31 @@
 {
+  "name": "php-email2db/php-email2db",
+  "description": "PHP class to access mailbox by POP3/IMAP using IMAP extension and parsing it into SQL database",
+  "keywords": ["php", "imap", "email", "sql", "mysql", "postgresql"],
+  "homepage": "https://github.com/moiseevigor/Email2DB",
+  "license": "GPLv3",
+  "type": "library",
+  "authors": [{
+    "name": "Igor Moiseev",
+    "homepage": "http://moiseevigor.github.io/",
+    "email": "moiseev.igor@gmail.com"
+  }],
   "repositories": [{
     "type": "pear",
     "url": "http://pear.php.net"
   }],
+  "autoload": {
+    "psr-0": {"": "src/"}
+  },
   "require": {
     "php": ">=5.3.0",
+    "phing/phing" : "2.*",
+    "pear-pear.php.net/pear": "*",
     "pear/System_Daemon": "*@dev",
     "pear/pear_exception": "*@beta",
-    "pear/Log": "*"
-  }
+    "pear/Log": "*",
+    "exorus/php-mime-mail-parser": "dev-master",
+    "ext-imap": "*"
+  },
+  "minimum-stability": "dev"
 }
