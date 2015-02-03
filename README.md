@@ -1,6 +1,6 @@
 # Email2DB 
 
-**ATTENZION! Work in progress, no working release yet!**
+**ATTENTION! Work in progress, no working release yet!**
 
 Email2DB parses the email schema into the relational schema.
 
