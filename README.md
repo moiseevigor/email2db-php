@@ -106,6 +106,6 @@ The [PEAR :: System Daemon](http://pear.php.net/package/System_Daemon) library i
 ### PHP Mime Mail Parser
 [PHP Mime Mail Parser](https://code.google.com/p/php-mime-mail-parser/) is used to parse the Mime messages in the version maintained by [@eXorus](https://github.com/eXorus/php-mime-mail-parser).
 
-## Contribution
+## Contributing
 
 Please clone, star and pull request. Please follow the [PSR coding style](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md).
