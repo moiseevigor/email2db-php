@@ -67,3 +67,7 @@ $ ./composer.phar show -p | grep -E "imap|mail"
 ext-imap            0        The imap PHP extension
 ext-mailparse       2.1.6    The mailparse PHP extension
 ```
+
+## Contribution
+
+Please clone, star and pull request. Please follow the [PSR coding style](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md). 
