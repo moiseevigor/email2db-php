@@ -68,7 +68,7 @@ ext-imap            0        The imap PHP extension
 ext-mailparse       2.1.6    The mailparse PHP extension
 ```
 
-## Dependences decision
+## Dependences
 
 Here we describe our decision on dependences
 
@@ -103,6 +103,8 @@ The [PEAR :: System Daemon](http://pear.php.net/package/System_Daemon) library i
 ### PHP :: IMAP
 [PHP :: IMAP](http://php.net/manual/en/book.imap.php) is the most comprehensive PHP library to operate with the IMAP protocol, as well as the NNTP, POP3 and local mailbox.
 
+### PHP Mime Mail Parser
+[PHP Mime Mail Parser](https://code.google.com/p/php-mime-mail-parser/) is used to parse the Mime messages in the version maintained by [@eXorus](https://github.com/eXorus/php-mime-mail-parser).
 
 ## Contribution
 
