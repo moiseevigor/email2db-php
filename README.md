@@ -1,4 +1,4 @@
-# Email2DB 
+# Email2DB
 
 **ATTENTION! Work in progress, no working release yet!**
 
@@ -16,13 +16,13 @@ Install IMAP extension
 sudo apt-get install php5-imap
 ```
 
-Enable IMAP extensions (creates symlink in `/etc/php5/cli/conf.d/`) 
+Enable IMAP extensions (creates symlink in `/etc/php5/cli/conf.d/`)
 
 ```
 sudo php5enmod imap
 ```
 
-Mailparse installation 
+Mailparse installation
 
 ```
 sudo apt-get install php5-dev
@@ -46,19 +46,19 @@ sudo php5enmod mailparse
 
 ### Project-wide installation procedure
 
-Install composer 
+Install composer
 
 ```
 curl -sS https://getcomposer.org/installer | php
 ```
 
-Next install all necessary packages 
+Next install all necessary packages
 
 ```
 ./composer.phar install
 ```
 
-No errors should be in the output, if there appear some, please check the previous step. 
+No errors should be in the output, if there appear some, please check the previous step.
 
 Now check out the configuration
 
@@ -68,6 +68,42 @@ ext-imap            0        The imap PHP extension
 ext-mailparse       2.1.6    The mailparse PHP extension
 ```
 
+## Dependences decision
+
+Here we describe our decision on dependences
+
+```
+cat composer.json
+
+...
+  "require": {
+    "php": ">=5.3.0",
+    "phing/phing" : "2.*",
+    "pear-pear.php.net/pear": "*",
+    "pear/System_Daemon": "*@dev",
+    "pear/pear_exception": "*@beta",
+    "pear/Log": "*",
+    "exorus/php-mime-mail-parser": "dev-master",
+    "doctrine/orm": "*",
+    "ext-imap": "*"
+  },
+...
+```
+
+### ORM :: Doctrine
+For the database interaction is choosen the [Doctrine](http://doctrine-orm.readthedocs.org/) as to be the most reliable and most flexible version of ORM. 
+It can intercat with the most RDBMS and NoSQL databases and can exploit tailable capabilities of some databases like [MongoDB](https://github.com/doctrine/doctrine-mongodb-odm-tailable-cursor-bundle).
+
+### PEAR :: System Daemon
+The [PEAR :: System Daemon](http://pear.php.net/package/System_Daemon) library is used to run Email2DB as a daemon in background.
+
+### PECL :: Mailparse
+[PECL :: Mailparse](http://pecl.php.net/package/mailparse) is an extension for parsing and working with email messages. It can deal with RFC822 and RFC2045 (MIME) compliant messages.
+
+### PHP :: IMAP
+[PHP :: IMAP](http://php.net/manual/en/book.imap.php) is the most comprehensive PHP library to operate with the IMAP protocol, as well as the NNTP, POP3 and local mailbox.
+
+
 ## Contribution
 
-Please clone, star and pull request. Please follow the [PSR coding style](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md). 
+Please clone, star and pull request. Please follow the [PSR coding style](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md).

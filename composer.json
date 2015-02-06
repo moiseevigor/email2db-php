@@ -25,6 +25,7 @@
     "pear/pear_exception": "*@beta",
     "pear/Log": "*",
     "exorus/php-mime-mail-parser": "dev-master",
+    "doctrine/orm": "*",
     "ext-imap": "*"
   },
   "minimum-stability": "dev"
