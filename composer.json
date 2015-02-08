@@ -15,7 +15,8 @@
     "url": "http://pear.php.net"
   }],
   "autoload": {
-    "psr-0": {"": "src/"}
+    "psr-0": {"": "src/"},
+    "psr-0": {"": "db/"}
   },
   "require": {
     "php": ">=5.4.0",

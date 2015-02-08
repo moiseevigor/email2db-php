@@ -1,0 +1,55 @@
+Email:
+  type: entity
+  table: Emails
+  id:
+    id:
+      type: bigint
+      generator:
+        strategy: AUTO
+  fields:
+    MessageID:
+      type: string
+      options:
+        comment: 'Unique ID of the message'
+    From:
+      type: string
+      options:
+        comment: 'The sender email address'
+    FromName:
+      type: string
+      options:
+        comment: 'The sender name'
+    To:
+      type: string
+      options:
+        comment: 'Inbound address the message was sent to'
+    Cc:
+      type: string
+      options:
+        comment: 'Cc recipient email address'
+    ReplyTo:
+      type: string
+      options:
+        comment: 'Reply to override email address'
+    OriginalRecipient:
+      type: string
+      options:
+        comment: 'Reply to override email address'
+    Subject:
+      type: string
+      options:
+        comment: 'Email subject'
+    Date:
+      type: string
+      options:
+        comment: 'Date parsed from email'
+    TextBody:
+      type: string
+      length: 16777215
+      options:
+        comment: 'Plain text email message'
+    HtmlBody:
+      type: string
+      length: 16777215
+      options:
+        comment: 'HTML email message'

@@ -7,11 +7,12 @@ return array(
 
    // Database conection config
   'db' => array(
-    'driver'    => 'mysql',
+    'driver'    => 'pdo_mysql',
     'host'      => 'localhost',
-    'username'  => 'root',
+    'user'      => 'root',
     'password'  => 'password',
-    'port'      => '3306'
+    'port'      => '3306',
+    'dbname'    => 'email2db'
     ),
 
   // Daemon config 
