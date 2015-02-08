@@ -52,6 +52,26 @@ Install composer
 curl -sS https://getcomposer.org/installer | php
 ```
 
+### Configure database
+
+For MySQL configuration on Ubuntu older 14.04
+
+```
+sudo apt-get install php5-mysqlnd
+```
+
+and find the `pdo_mysql` module in the running config, the essential to Doctrine 
+
+```
+$ php -m| grep -i mysql
+mysql
+mysqli
+mysqlnd
+pdo_mysql
+```
+
+### Install dependences 
+
 Next install all necessary packages
 
 ```
@@ -66,6 +86,21 @@ Now check out the configuration
 $ ./composer.phar show -p | grep -E "imap|mail"
 ext-imap            0        The imap PHP extension
 ext-mailparse       2.1.6    The mailparse PHP extension
+ext-mysql           1.0      The mysql PHP extension
+ext-mysqli          0.1      The mysqli PHP extension
+ext-mysqlnd         0        The mysqlnd PHP extension
+ext-pdo_mysql       1.0.2    The pdo_mysql PHP extension
+```
+
+### Configure Doctrine
+
+```
+$ vendor/bin/doctrine orm:schema-tool:create
+
+ATTENTION: This operation should not be executed in a production environment.
+
+Creating database schema...
+Database schema created successfully!
 ```
 
 ## Dependences
