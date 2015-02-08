@@ -126,8 +126,8 @@ cat composer.json
 ```
 
 ### ORM :: Doctrine
-For the database interaction is choosen the [Doctrine](http://doctrine-orm.readthedocs.org/) as to be the most reliable and most flexible version of ORM. 
-It can intercat with the most RDBMS and NoSQL databases and can exploit tailable capabilities of some databases like [MongoDB](https://github.com/doctrine/doctrine-mongodb-odm-tailable-cursor-bundle).
+For the database interaction we choose [Doctrine](http://doctrine-orm.readthedocs.org/), we find it to be the most reliable and the most flexible version of open ORM. 
+It can intercat with variety of RDBMS and NoSQL databases and can exploit tailable capabilities of some databases like [MongoDB](https://github.com/doctrine/doctrine-mongodb-odm-tailable-cursor-bundle).
 
 ### PEAR :: System Daemon
 The [PEAR :: System Daemon](http://pear.php.net/package/System_Daemon) library is used to run Email2DB as a daemon in background.
@@ -141,6 +141,6 @@ The [PEAR :: System Daemon](http://pear.php.net/package/System_Daemon) library i
 ### PHP Mime Mail Parser
 [PHP Mime Mail Parser](https://code.google.com/p/php-mime-mail-parser/) is used to parse the Mime messages in the version maintained by [@eXorus](https://github.com/eXorus/php-mime-mail-parser).
 
-## Contribution
+## Contributing
 
 Please clone, star and pull request. Please follow the [PSR coding style](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md).
