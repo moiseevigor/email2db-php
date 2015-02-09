@@ -18,5 +18,5 @@ Header:
   manyToOne:
     Email:
       targetEntity: Email
-      inversedBy: reportedHeaders
+      inversedBy: parsedHeaders
 
