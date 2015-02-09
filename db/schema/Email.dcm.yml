@@ -17,39 +17,63 @@ Email:
         comment: 'The sender email address'
     FromName:
       type: string
+      nullable: true
       options:
         comment: 'The sender name'
     To:
       type: string
       options:
         comment: 'Inbound address the message was sent to'
+    ToName:
+      type: string
+      nullable: true
+      options:
+        comment: 'Inbound person name the message was sent to'
     Cc:
       type: string
+      nullable: true
       options:
         comment: 'Cc recipient email address'
     ReplyTo:
       type: string
+      nullable: true
       options:
         comment: 'Reply to override email address'
     OriginalRecipient:
       type: string
+      nullable: true
       options:
         comment: 'Reply to override email address'
     Subject:
       type: string
       options:
         comment: 'Email subject'
-    Date:
-      type: string
+    ReceivedAt:
+      type: datetime
+      nullable: false
       options:
         comment: 'Date parsed from email'
+    CreatedAt:
+      type: datetime
+      nullable: false
+      options:
+        comment: 'Date when email have been saved in db'
     TextBody:
       type: string
+      nullable: true
       length: 16777215
       options:
         comment: 'Plain text email message'
     HtmlBody:
       type: string
+      nullable: true
       length: 16777215
       options:
         comment: 'HTML email message'
+  oneToMany:
+    parsedHeaders:
+      targetEntity: Header
+      mappedBy: Email
+    parsedAttachments:
+      targetEntity: Attachment
+      mappedBy: Email

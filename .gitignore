@@ -4,3 +4,4 @@ config.php
 email2db.log
 log/*.log
 db/old
+db/*.php~

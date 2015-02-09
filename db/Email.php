@@ -341,4 +341,215 @@ class Email
     {
         return $this->HtmlBody;
     }
+    /**
+     * @var string
+     */
+    private $ToName;
+
+
+    /**
+     * Set toName
+     *
+     * @param string $toName
+     *
+     * @return Email
+     */
+    public function setToName($toName)
+    {
+        $this->ToName = $toName;
+
+        return $this;
+    }
+
+    /**
+     * Get toName
+     *
+     * @return string
+     */
+    public function getToName()
+    {
+        return $this->ToName;
+    }
+    /**
+     * @var \DateTime
+     */
+    private $CreatedAt;
+
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return Email
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->CreatedAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->CreatedAt;
+    }
+    /**
+     * @var \DateTime
+     */
+    private $ReceivedAt;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $reportedHeaders;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->reportedHeaders = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Set receivedAt
+     *
+     * @param \DateTime $receivedAt
+     *
+     * @return Email
+     */
+    public function setReceivedAt($receivedAt)
+    {
+        $this->ReceivedAt = $receivedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get receivedAt
+     *
+     * @return \DateTime
+     */
+    public function getReceivedAt()
+    {
+        return $this->ReceivedAt;
+    }
+
+    /**
+     * Add reportedHeader
+     *
+     * @param \Header $reportedHeader
+     *
+     * @return Email
+     */
+    public function addReportedHeader(\Header $reportedHeader)
+    {
+        $this->reportedHeaders[] = $reportedHeader;
+
+        return $this;
+    }
+
+    /**
+     * Remove reportedHeader
+     *
+     * @param \Header $reportedHeader
+     */
+    public function removeReportedHeader(\Header $reportedHeader)
+    {
+        $this->reportedHeaders->removeElement($reportedHeader);
+    }
+
+    /**
+     * Get reportedHeaders
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getReportedHeaders()
+    {
+        return $this->reportedHeaders;
+    }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $parsedHeaders;
+
+
+    /**
+     * Add parsedHeader
+     *
+     * @param \Header $parsedHeader
+     *
+     * @return Email
+     */
+    public function addParsedHeader(\Header $parsedHeader)
+    {
+        $this->parsedHeaders[] = $parsedHeader;
+
+        return $this;
+    }
+
+    /**
+     * Remove parsedHeader
+     *
+     * @param \Header $parsedHeader
+     */
+    public function removeParsedHeader(\Header $parsedHeader)
+    {
+        $this->parsedHeaders->removeElement($parsedHeader);
+    }
+
+    /**
+     * Get parsedHeaders
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getParsedHeaders()
+    {
+        return $this->parsedHeaders;
+    }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $parsedAttachments;
+
+
+    /**
+     * Add parsedAttachment
+     *
+     * @param \Attachment $parsedAttachment
+     *
+     * @return Email
+     */
+    public function addParsedAttachment(\Attachment $parsedAttachment)
+    {
+        $this->parsedAttachments[] = $parsedAttachment;
+
+        return $this;
+    }
+
+    /**
+     * Remove parsedAttachment
+     *
+     * @param \Attachment $parsedAttachment
+     */
+    public function removeParsedAttachment(\Attachment $parsedAttachment)
+    {
+        $this->parsedAttachments->removeElement($parsedAttachment);
+    }
+
+    /**
+     * Get parsedAttachments
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getParsedAttachments()
+    {
+        return $this->parsedAttachments;
+    }
 }

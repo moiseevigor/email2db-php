@@ -1,0 +1,36 @@
+Attachment:
+  type: entity
+  table: Attachments
+  id:
+    id:
+      type: bigint
+      generator:
+        strategy: AUTO
+  fields:
+    ContentType:
+      type: string
+      options:
+        comment: 'Attachment Content Type'
+    ContentID:
+      type: string
+      options:
+        comment: 'Attachment Content ID'
+    Size:
+      type: integer
+      options:
+        comment: 'Attachment size'
+    Filename:
+      type: string
+      nullable: true
+      options:
+        comment: 'Attachment filename'
+    Content:
+      type: blob
+      nullable: true
+      options:
+        comment: 'Attachment binary content'
+  manyToOne:
+    Email:
+      targetEntity: Email
+      inversedBy: parsedAttachments
+
