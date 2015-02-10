@@ -24,5 +24,84 @@
 
 class Email2DB
 {
-    
+    /**
+     * @var eXorus\PhpMimeMailParser\Parser
+     */
+    private $Parser;
+
+    /**
+     * Constructor
+     *
+     * @return null
+     */
+    public function __construct()
+    {
+        $this->Parser = new eXorus\PhpMimeMailParser\Parser();
+    }
+
+    /**
+     * Parse method
+     *
+     * @return null
+     */
+    public function parseEmail($file)
+    {
+        global $entityManager;
+
+        if(is_file($file)) {
+            //There are three input methods of the mime mail to be parsed
+            //specify a file path to the mime mail :
+            $this->Parser->setPath($file);
+
+            // Or specify a php file resource (stream) to the mime mail :
+            $this->Parser->setStream(fopen($file, "r"));
+
+            // We can get all the necessary data
+            $to = $this->Parser->getHeader('to');
+            $from = $this->Parser->getHeader('from');
+            $subject = $this->Parser->getHeader('subject');
+
+            $headers = $this->Parser->getHeaders();
+
+var_dump($headers);
+
+            $text = $this->Parser->getMessageBody('text');
+            $html = $this->Parser->getMessageBody('html');
+            $htmlEmbedded = $this->Parser->getMessageBody('htmlEmbedded'); //HTML Body included data
+
+            // and the attachments also
+            $attach_dir = '/tmp/';
+            $this->Parser->saveAttachments($attach_dir);
+
+            var_dump($to);
+            var_dump($from);
+            var_dump($subject);
+            var_dump($text);
+            var_dump($htmlEmbedded);
+
+            $email = new Email();
+            $email->setTo($to);
+            $email->setFrom($from);
+            $email->setFrom($subject);
+            $email->setMessageId($headers['message-id']);
+
+
+
+        try {
+            $entityManager->persist($email);
+            $entityManager->flush();
+        } catch (\PDOException $exception) {
+            var_dump(PDOException($exception));
+        }
+
+
+
+            echo "Created Email with ID " . $email->getId() . "\n";
+
+            return true;
+        }
+
+        return false;
+    }
+
 }
