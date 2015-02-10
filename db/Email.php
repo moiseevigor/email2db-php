@@ -20,7 +20,7 @@ class Email
     /**
      * @var string
      */
-    private $from;
+    private $from_email;
 
     /**
      * @var string
@@ -30,7 +30,7 @@ class Email
     /**
      * @var string
      */
-    private $to;
+    private $to_email;
 
     /**
      * @var string
@@ -127,27 +127,27 @@ class Email
     }
 
     /**
-     * Set from
+     * Set fromEmail
      *
-     * @param string $from
+     * @param string $fromEmail
      *
      * @return Email
      */
-    public function setFrom($from)
+    public function setFromEmail($fromEmail)
     {
-        $this->from = $from;
+        $this->from_email = $fromEmail;
 
         return $this;
     }
 
     /**
-     * Get from
+     * Get fromEmail
      *
      * @return string
      */
-    public function getFrom()
+    public function getFromEmail()
     {
-        return $this->from;
+        return $this->from_email;
     }
 
     /**
@@ -175,27 +175,27 @@ class Email
     }
 
     /**
-     * Set to
+     * Set toEmail
      *
-     * @param string $to
+     * @param string $toEmail
      *
      * @return Email
      */
-    public function setTo($to)
+    public function setToEmail($toEmail)
     {
-        $this->to = $to;
+        $this->to_email = $toEmail;
 
         return $this;
     }
 
     /**
-     * Get to
+     * Get toEmail
      *
      * @return string
      */
-    public function getTo()
+    public function getToEmail()
     {
-        return $this->to;
+        return $this->to_email;
     }
 
     /**

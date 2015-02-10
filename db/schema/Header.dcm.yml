@@ -19,4 +19,8 @@ Header:
     email:
       targetEntity: Email
       inversedBy: parsedHeaders
-
+      cascade: ["all", "persist", "merge", "remove", "refresh"]
+      joinColumns:
+        email_id:
+          referencedColumnName: id
+          onDelete: CASCADE 

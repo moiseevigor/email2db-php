@@ -11,7 +11,7 @@ Attachment:
       type: string
       options:
         comment: 'Attachment Content Type'
-    size:
+    size_of:
       type: integer
       options:
         comment: 'Attachment size in bytes'
@@ -34,4 +34,8 @@ Attachment:
     email:
       targetEntity: Email
       inversedBy: parsedAttachments
-
+      cascade: ["all", "persist", "merge", "remove", "refresh"]
+      joinColumns:
+        email_id:
+          referencedColumnName: id
+          onDelete: CASCADE

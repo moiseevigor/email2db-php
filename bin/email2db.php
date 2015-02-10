@@ -37,12 +37,20 @@ $isDevMode = true;
 $configDoctrine = Setup::createYAMLMetadataConfiguration($paths, $isDevMode);
 $entityManager = EntityManager::create($config['db'], $configDoctrine);
 
+/*
+$entityManager->getConnection()
+  ->getConfiguration()
+  ->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+*/
 
 // main instance
 $email2db = new Email2DB();
 
-$email2db->parseEmail('email.eml');
+foreach (glob("vendor/exorus/php-mime-mail-parser/test/mails/m*") as $filename) {
+  $email2db->parseEmail($filename);
+}
 die();
+
 
 // define the file permissions to 644
 umask(0022);

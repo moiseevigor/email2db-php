@@ -11,7 +11,7 @@ Email:
       type: string
       options:
         comment: 'Unique ID of the message'
-    from:
+    from_email:
       type: string
       options:
         comment: 'The sender email address'
@@ -20,7 +20,7 @@ Email:
       nullable: true
       options:
         comment: 'The sender name'
-    to:
+    to_email:
       type: string
       options:
         comment: 'Inbound address the message was sent to'

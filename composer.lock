@@ -839,20 +839,20 @@
         },
         {
             "name": "pear/log",
-            "version": "dev-master",
+            "version": "dev-topics/composer-for-pear",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/Log.git",
-                "reference": "df7aa179cb596a217d6d3eb8c5e900f3a63b9dbe"
+                "reference": "0a17c8958c36207bd345b51e80c667f58be2a2c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/Log/zipball/df7aa179cb596a217d6d3eb8c5e900f3a63b9dbe",
-                "reference": "df7aa179cb596a217d6d3eb8c5e900f3a63b9dbe",
+                "url": "https://api.github.com/repos/pear/Log/zipball/0a17c8958c36207bd345b51e80c667f58be2a2c9",
+                "reference": "0a17c8958c36207bd345b51e80c667f58be2a2c9",
                 "shasum": ""
             },
             "require": {
-                "pear/pear_exception": "1.0-beta1",
+                "pear/pear_exception": "*",
                 "php": ">5.2"
             },
             "require-dev": {
@@ -883,25 +883,25 @@
                 }
             ],
             "description": "PEAR Logging Framework",
-            "homepage": "http://pear.github.io/Log/",
+            "homepage": "https://github.com/pear/Log",
             "keywords": [
                 "log",
                 "logging"
             ],
-            "time": "2014-07-12 19:04:12"
+            "time": "2014-02-17 21:56:45"
         },
         {
             "name": "pear/pear_exception",
-            "version": "1.0-beta1",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/PEAR_Exception.git",
-                "reference": "f053615c7cbdfaba5a3b7021ee58a48523b8576c"
+                "reference": "8c18719fdae000b690e3912be401c76e406dd13b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/PEAR_Exception/zipball/f053615c7cbdfaba5a3b7021ee58a48523b8576c",
-                "reference": "f053615c7cbdfaba5a3b7021ee58a48523b8576c",
+                "url": "https://api.github.com/repos/pear/PEAR_Exception/zipball/8c18719fdae000b690e3912be401c76e406dd13b",
+                "reference": "8c18719fdae000b690e3912be401c76e406dd13b",
                 "shasum": ""
             },
             "require": {
@@ -931,13 +931,11 @@
             "authors": [
                 {
                     "name": "Helgi Thormar",
-                    "email": "dufuz@php.net",
-                    "role": "Lead"
+                    "email": "dufuz@php.net"
                 },
                 {
                     "name": "Greg Beaver",
-                    "email": "cellog@php.net",
-                    "role": "Helper"
+                    "email": "cellog@php.net"
                 }
             ],
             "description": "The PEAR Exception base class.",
@@ -945,7 +943,7 @@
             "keywords": [
                 "exception"
             ],
-            "time": "2014-02-21 17:29:07"
+            "time": "2015-02-10 20:07:52"
         },
         {
             "name": "pear/system_daemon",

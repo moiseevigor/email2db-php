@@ -20,7 +20,7 @@ class Body
     /**
      * @var integer
      */
-    private $size;
+    private $size_of;
 
     /**
      * @var string
@@ -78,27 +78,27 @@ class Body
     }
 
     /**
-     * Set size
+     * Set sizeOf
      *
-     * @param integer $size
+     * @param integer $sizeOf
      *
      * @return Body
      */
-    public function setSize($size)
+    public function setSizeOf($sizeOf)
     {
-        $this->size = $size;
+        $this->size_of = $sizeOf;
 
         return $this;
     }
 
     /**
-     * Get size
+     * Get sizeOf
      *
      * @return integer
      */
-    public function getSize()
+    public function getSizeOf()
     {
-        return $this->size;
+        return $this->size_of;
     }
 
     /**

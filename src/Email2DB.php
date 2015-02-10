@@ -57,13 +57,10 @@ class Email2DB
             $this->Parser->setStream(fopen($file, "r"));
 
             // We can get all the necessary data
-            $to = $this->Parser->getHeader('to');
-            $from = $this->Parser->getHeader('from');
             $subject = $this->Parser->getHeader('subject');
-
-            $headers = $this->Parser->getHeaders();
-
-var_dump($headers);
+            $message_id = $this->Parser->getHeader('message-id');
+            $fromPersonal = imap_rfc822_parse_adrlist($this->Parser->getHeader('from'), '')[0];
+            $toPersonal = imap_rfc822_parse_adrlist($this->Parser->getHeader('to'), '')[0];
 
             $text = $this->Parser->getMessageBody('text');
             $html = $this->Parser->getMessageBody('html');
@@ -73,27 +70,26 @@ var_dump($headers);
             $attach_dir = '/tmp/';
             $this->Parser->saveAttachments($attach_dir);
 
-            var_dump($to);
-            var_dump($from);
-            var_dump($subject);
-            var_dump($text);
-            var_dump($htmlEmbedded);
-
             $email = new Email();
-            $email->setTo($to);
-            $email->setFrom($from);
-            $email->setFrom($subject);
-            $email->setMessageId($headers['message-id']);
+            $email->setToEmail($toPersonal->mailbox . '@' . $toPersonal->host);
+
+            if(isset($toPersonal->personal))
+                $email->setToName($toPersonal->personal);
+
+            $email->setFromEmail($fromPersonal->mailbox . '@' . $fromPersonal->host);
+
+            if(isset($fromPersonal->personal))
+                $email->setFromName($fromPersonal->personal);
+
+            $email->setSubject($subject);
+            $email->setMessageId($message_id);
+            $email->setReceivedAt(new DateTime($this->Parser->getHeader('date')));
+            $email->setCreatedAt(new DateTime('now'));
 
 
 
-        try {
             $entityManager->persist($email);
             $entityManager->flush();
-        } catch (\PDOException $exception) {
-            var_dump(PDOException($exception));
-        }
-
 
 
             echo "Created Email with ID " . $email->getId() . "\n";
