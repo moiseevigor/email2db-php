@@ -1,79 +1,70 @@
 Email:
   type: entity
-  table: Emails
+  table: emails
   id:
     id:
       type: bigint
       generator:
         strategy: AUTO
   fields:
-    MessageID:
+    message_id:
       type: string
       options:
         comment: 'Unique ID of the message'
-    From:
+    from:
       type: string
       options:
         comment: 'The sender email address'
-    FromName:
+    from_name:
       type: string
       nullable: true
       options:
         comment: 'The sender name'
-    To:
+    to:
       type: string
       options:
         comment: 'Inbound address the message was sent to'
-    ToName:
+    to_name:
       type: string
       nullable: true
       options:
         comment: 'Inbound person name the message was sent to'
-    Cc:
+    cc:
       type: string
       nullable: true
       options:
         comment: 'Cc recipient email address'
-    ReplyTo:
+    reply_to:
       type: string
       nullable: true
       options:
         comment: 'Reply to override email address'
-    OriginalRecipient:
+    original_recipient:
       type: string
       nullable: true
       options:
         comment: 'Reply to override email address'
-    Subject:
+    subject:
       type: string
       options:
         comment: 'Email subject'
-    ReceivedAt:
+    received_at:
       type: datetime
       nullable: false
       options:
         comment: 'Date parsed from email'
-    CreatedAt:
+    created_at:
       type: datetime
       nullable: false
       options:
         comment: 'Date when email have been saved in db'
-    TextBody:
-      type: string
-      nullable: true
-      length: 16777215
-      options:
-        comment: 'Plain text email message'
-    HtmlBody:
-      type: string
-      nullable: true
-      length: 16777215
-      options:
-        comment: 'HTML email message'
   oneToMany:
     parsedHeaders:
       targetEntity: Header
-      mappedBy: Email
+      mappedBy: email
     parsedAttachments:
       targetEntity: Attachment
-      mappedBy: Email
+      mappedBy: email
+    parsedBody:
+      targetEntity: Body
+      mappedBy: email

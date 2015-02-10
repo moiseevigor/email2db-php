@@ -1,6 +1,6 @@
-Attachment:
+Body:
   type: entity
-  table: attachments
+  table: body
   id:
     id:
       type: bigint
@@ -10,11 +10,11 @@ Attachment:
     content_type:
       type: string
       options:
-        comment: 'Attachment Content Type'
+        comment: 'Body Content Type'
     size:
       type: integer
       options:
-        comment: 'Attachment size in bytes'
+        comment: 'Body size in bytes'
     charset:
       type: string
       nullable: true
@@ -26,12 +26,13 @@ Attachment:
       options:
         comment: 'Attachment filename'
     content:
-      type: blob
+      type: string
       nullable: true
+      length: 16777215
       options:
-        comment: 'Attachment binary content'
+        comment: 'Body decoded content'
   manyToOne:
     email:
       targetEntity: Email
-      inversedBy: parsedAttachments
+      inversedBy: parsedBody
 

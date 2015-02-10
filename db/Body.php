@@ -3,9 +3,9 @@
 
 
 /**
- * Attachment
+ * Body
  */
-class Attachment
+class Body
 {
     /**
      * @var integer
@@ -58,7 +58,7 @@ class Attachment
      *
      * @param string $contentType
      *
-     * @return Attachment
+     * @return Body
      */
     public function setContentType($contentType)
     {
@@ -82,7 +82,7 @@ class Attachment
      *
      * @param integer $size
      *
-     * @return Attachment
+     * @return Body
      */
     public function setSize($size)
     {
@@ -106,7 +106,7 @@ class Attachment
      *
      * @param string $charset
      *
-     * @return Attachment
+     * @return Body
      */
     public function setCharset($charset)
     {
@@ -130,7 +130,7 @@ class Attachment
      *
      * @param string $filename
      *
-     * @return Attachment
+     * @return Body
      */
     public function setFilename($filename)
     {
@@ -154,7 +154,7 @@ class Attachment
      *
      * @param string $content
      *
-     * @return Attachment
+     * @return Body
      */
     public function setContent($content)
     {
@@ -178,7 +178,7 @@ class Attachment
      *
      * @param \Email $email
      *
-     * @return Attachment
+     * @return Body
      */
     public function setEmail(\Email $email = null)
     {

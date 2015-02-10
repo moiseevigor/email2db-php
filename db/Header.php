@@ -13,24 +13,19 @@ class Header
     private $id;
 
     /**
-     * @var integer
+     * @var string
      */
-    private $EmailID;
+    private $name;
 
     /**
      * @var string
      */
-    private $Name;
-
-    /**
-     * @var string
-     */
-    private $Value;
+    private $value;
 
     /**
      * @var \Email
      */
-    private $header;
+    private $email;
 
 
     /**
@@ -44,30 +39,6 @@ class Header
     }
 
     /**
-     * Set emailID
-     *
-     * @param integer $emailID
-     *
-     * @return Header
-     */
-    public function setEmailID($emailID)
-    {
-        $this->EmailID = $emailID;
-
-        return $this;
-    }
-
-    /**
-     * Get emailID
-     *
-     * @return integer
-     */
-    public function getEmailID()
-    {
-        return $this->EmailID;
-    }
-
-    /**
      * Set name
      *
      * @param string $name
@@ -76,7 +47,7 @@ class Header
      */
     public function setName($name)
     {
-        $this->Name = $name;
+        $this->name = $name;
 
         return $this;
     }
@@ -88,7 +59,7 @@ class Header
      */
     public function getName()
     {
-        return $this->Name;
+        return $this->name;
     }
 
     /**
@@ -100,7 +71,7 @@ class Header
      */
     public function setValue($value)
     {
-        $this->Value = $value;
+        $this->value = $value;
 
         return $this;
     }
@@ -112,37 +83,8 @@ class Header
      */
     public function getValue()
     {
-        return $this->Value;
+        return $this->value;
     }
-
-    /**
-     * Set header
-     *
-     * @param \Email $header
-     *
-     * @return Header
-     */
-    public function setHeader(\Email $header = null)
-    {
-        $this->header = $header;
-
-        return $this;
-    }
-
-    /**
-     * Get header
-     *
-     * @return \Email
-     */
-    public function getHeader()
-    {
-        return $this->header;
-    }
-    /**
-     * @var \Email
-     */
-    private $Email;
-
 
     /**
      * Set email
@@ -153,7 +95,7 @@ class Header
      */
     public function setEmail(\Email $email = null)
     {
-        $this->Email = $email;
+        $this->email = $email;
 
         return $this;
     }
@@ -165,6 +107,7 @@ class Header
      */
     public function getEmail()
     {
-        return $this->Email;
+        return $this->email;
     }
 }
+

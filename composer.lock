@@ -289,12 +289,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "42440c330deed595f773fd8e70eee519c7d5dbbe"
+                "reference": "77efbbde1ce73744add84f5e79bf32516e38ad4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/42440c330deed595f773fd8e70eee519c7d5dbbe",
-                "reference": "42440c330deed595f773fd8e70eee519c7d5dbbe",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/77efbbde1ce73744add84f5e79bf32516e38ad4e",
+                "reference": "77efbbde1ce73744add84f5e79bf32516e38ad4e",
                 "shasum": ""
             },
             "require": {
@@ -352,7 +352,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2015-01-30 11:30:31"
+            "time": "2015-02-10 13:22:09"
         },
         {
             "name": "doctrine/inflector",
@@ -980,12 +980,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phingofficial/phing.git",
-                "reference": "ef1e489028a130a71bfe4cb2dc260390856223ec"
+                "reference": "a92a80b71badbfd227441489133546ba085e629a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phingofficial/phing/zipball/ef1e489028a130a71bfe4cb2dc260390856223ec",
-                "reference": "ef1e489028a130a71bfe4cb2dc260390856223ec",
+                "url": "https://api.github.com/repos/phingofficial/phing/zipball/a92a80b71badbfd227441489133546ba085e629a",
+                "reference": "a92a80b71badbfd227441489133546ba085e629a",
                 "shasum": ""
             },
             "require": {
@@ -1029,7 +1029,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.9.x-dev"
+                    "dev-master": "2.11.x-dev"
                 }
             },
             "autoload": {
@@ -1062,7 +1062,7 @@
                 "task",
                 "tool"
             ],
-            "time": "2015-02-06 16:44:40"
+            "time": "2015-02-10 06:53:25"
         },
         {
             "name": "symfony/console",

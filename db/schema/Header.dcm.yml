@@ -1,22 +1,22 @@
 Header:
   type: entity
-  table: Headers
+  table: headers
   id:
     id:
       type: bigint
       generator:
         strategy: AUTO
   fields:
-    Name:
+    name:
       type: string
       options:
         comment: 'Header name'
-    Value:
+    value:
       type: string
       options:
         comment: 'Header value'
   manyToOne:
-    Email:
+    email:
       targetEntity: Email
       inversedBy: parsedHeaders
 
