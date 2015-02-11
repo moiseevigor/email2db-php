@@ -22,7 +22,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class Email2DB
+class Email2DB extends eXorus\PhpMimeMailParser\Parser
 {
     /**
      * @var eXorus\PhpMimeMailParser\Parser
@@ -36,7 +36,51 @@ class Email2DB
      */
     public function __construct()
     {
-        $this->Parser = new eXorus\PhpMimeMailParser\Parser();
+    }
+
+    /**
+     * Retrieve a specific Email Header, NULL if does not exist
+     *
+     * @override \Parser->getHeader()
+     * @return String
+     * @param $name String Header name
+     */
+    public function getHeader($name)
+    {
+        $header = parent::getHeader($name);
+        return (false === $header)? null : $header;
+    }
+
+    /**
+     * Retrieve Headers array
+     *
+     * @return Mixed or False if not found
+     * @return String
+     */
+    public function getHeaders()
+    {
+        if (isset($this->parts[1])) {
+            $headers = $this->getPart('headers', $this->parts[1]);
+            return (is_array($headers)) ? $headers : null;
+        } else {
+            throw new \Exception(
+                'setPath() or setText() or setStream() must be called before retrieving email headers.'
+            );
+        }
+
+        return null;
+    }
+
+    /**
+     * Retrieve a specified MIME part
+     *
+     * @override \Parser->getPart()
+     * @return String or Array
+     * @param $type String, $parts Array
+     */
+    public function getPart($type, $parts)
+    {
+        return (isset($parts[$type])) ? $parts[$type] : null;
     }
 
     /**
@@ -46,53 +90,31 @@ class Email2DB
      */
     public function parseEmail($file)
     {
-        global $entityManager;
-
         if(is_file($file)) {
             //There are three input methods of the mime mail to be parsed
             //specify a file path to the mime mail :
-            $this->Parser->setPath($file);
+            $this->setPath($file);
 
             // Or specify a php file resource (stream) to the mime mail :
-            $this->Parser->setStream(fopen($file, "r"));
+            $this->setStream(fopen($file, "r"));
+
+            if($this->saveEmail()) {
+
+            }
+
+            var_dump($this->getHeaders());
+            die();
 
             // We can get all the necessary data
-            $subject = $this->Parser->getHeader('subject');
-            $message_id = $this->Parser->getHeader('message-id');
-            $fromPersonal = imap_rfc822_parse_adrlist($this->Parser->getHeader('from'), '')[0];
-            $toPersonal = imap_rfc822_parse_adrlist($this->Parser->getHeader('to'), '')[0];
 
-            $text = $this->Parser->getMessageBody('text');
-            $html = $this->Parser->getMessageBody('html');
-            $htmlEmbedded = $this->Parser->getMessageBody('htmlEmbedded'); //HTML Body included data
+            $text = $this->getMessageBody('text');
+            $html = $this->getMessageBody('html');
+            $htmlEmbedded = $this->getMessageBody('htmlEmbedded'); //HTML Body included data
 
             // and the attachments also
             $attach_dir = '/tmp/';
-            $this->Parser->saveAttachments($attach_dir);
+            $this->saveAttachments($attach_dir);
 
-            $email = new Email();
-            $email->setToEmail($toPersonal->mailbox . '@' . $toPersonal->host);
-
-            if(isset($toPersonal->personal))
-                $email->setToName($toPersonal->personal);
-
-            $email->setFromEmail($fromPersonal->mailbox . '@' . $fromPersonal->host);
-
-            if(isset($fromPersonal->personal))
-                $email->setFromName($fromPersonal->personal);
-
-            $email->setSubject($subject);
-            $email->setMessageId($message_id);
-            $email->setReceivedAt(new DateTime($this->Parser->getHeader('date')));
-            $email->setCreatedAt(new DateTime('now'));
-
-
-
-            $entityManager->persist($email);
-            $entityManager->flush();
-
-
-            echo "Created Email with ID " . $email->getId() . "\n";
 
             return true;
         }
@@ -100,4 +122,76 @@ class Email2DB
         return false;
     }
 
+    /**
+     * Parse method
+     *
+     * @return bool
+     */
+    public function saveEmail()
+    {
+        global $entityManager;
+
+        $email = new Email();
+
+        // Get neccesary headers
+        $fromPersonal = imap_rfc822_parse_adrlist($this->getHeader('from'), '')[0];
+        $toPersonal = imap_rfc822_parse_adrlist($this->getHeader('to'), '')[0];
+        $ccPersonal = imap_rfc822_parse_adrlist($this->getHeader('cc'), '')[0];
+        $replyToPersonal = imap_rfc822_parse_adrlist($this->getHeader('reply-to'), '')[0];
+        $originalRecipientPersonal = imap_rfc822_parse_adrlist($this->getHeader('original-recipient'), '')[0];
+
+        $email->setToEmail($toPersonal->mailbox . '@' . $toPersonal->host);
+
+        if(isset($toPersonal->personal))
+            $email->setToName($toPersonal->personal);
+
+        $email->setFromEmail($fromPersonal->mailbox . '@' . $fromPersonal->host);
+
+        if(isset($fromPersonal->personal))
+            $email->setFromName($fromPersonal->personal);
+
+        $email->setCc($ccPersonal->mailbox . '@' . $ccPersonal->host);
+        $email->setReplyTo($replyToPersonal->mailbox . '@' . $replyToPersonal->host);
+        $email->setOriginalRecipient($originalRecipientPersonal->mailbox . '@' . $originalRecipientPersonal->host);
+
+
+        $email->setSubject($this->getHeader('subject'));
+        $email->setMessageId($this->getHeader('message-id'));
+        $email->setReceivedAt(new DateTime($this->getHeader('date')));
+        $email->setCreatedAt(new DateTime('now'));
+
+        $entityManager->persist($email);
+        $entityManager->flush();
+
+        echo "Created Email with ID " . $email->getId() . "\n";
+
+        return true;
+    }
+
+    /**
+     * Parse method
+     *
+     * @return bool
+     */
+    public function saveHeader($file)
+    {
+    }
+
+    /**
+     * Parse method
+     *
+     * @return bool
+     */
+    public function saveBody($file)
+    {
+    }
+
+    /**
+     * Parse method
+     *
+     * @return bool
+     */
+    public function saveAttachement($file)
+    {
+    }
 }

@@ -35,7 +35,12 @@ class Body
     /**
      * @var string
      */
-    private $content;
+    private $content_plain;
+
+    /**
+     * @var string
+     */
+    private $content_html;
 
     /**
      * @var \Email
@@ -150,27 +155,51 @@ class Body
     }
 
     /**
-     * Set content
+     * Set contentPlain
      *
-     * @param string $content
+     * @param string $contentPlain
      *
      * @return Body
      */
-    public function setContent($content)
+    public function setContentPlain($contentPlain)
     {
-        $this->content = $content;
+        $this->content_plain = $contentPlain;
 
         return $this;
     }
 
     /**
-     * Get content
+     * Get contentPlain
      *
      * @return string
      */
-    public function getContent()
+    public function getContentPlain()
     {
-        return $this->content;
+        return $this->content_plain;
+    }
+
+    /**
+     * Set contentHtml
+     *
+     * @param string $contentHtml
+     *
+     * @return Body
+     */
+    public function setContentHtml($contentHtml)
+    {
+        $this->content_html = $contentHtml;
+
+        return $this;
+    }
+
+    /**
+     * Get contentHtml
+     *
+     * @return string
+     */
+    public function getContentHtml()
+    {
+        return $this->content_html;
     }
 
     /**

@@ -68,6 +68,11 @@ class Email
     private $created_at;
 
     /**
+     * @var \Body
+     */
+    private $parsedBody;
+
+    /**
      * @var \Doctrine\Common\Collections\Collection
      */
     private $parsedHeaders;
@@ -78,18 +83,12 @@ class Email
     private $parsedAttachments;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $parsedBody;
-
-    /**
      * Constructor
      */
     public function __construct()
     {
         $this->parsedHeaders = new \Doctrine\Common\Collections\ArrayCollection();
         $this->parsedAttachments = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->parsedBody = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -367,6 +366,30 @@ class Email
     }
 
     /**
+     * Set parsedBody
+     *
+     * @param \Body $parsedBody
+     *
+     * @return Email
+     */
+    public function setParsedBody(\Body $parsedBody = null)
+    {
+        $this->parsedBody = $parsedBody;
+
+        return $this;
+    }
+
+    /**
+     * Get parsedBody
+     *
+     * @return \Body
+     */
+    public function getParsedBody()
+    {
+        return $this->parsedBody;
+    }
+
+    /**
      * Add parsedHeader
      *
      * @param \Header $parsedHeader
@@ -432,40 +455,6 @@ class Email
     public function getParsedAttachments()
     {
         return $this->parsedAttachments;
-    }
-
-    /**
-     * Add parsedBody
-     *
-     * @param \Body $parsedBody
-     *
-     * @return Email
-     */
-    public function addParsedBody(\Body $parsedBody)
-    {
-        $this->parsedBody[] = $parsedBody;
-
-        return $this;
-    }
-
-    /**
-     * Remove parsedBody
-     *
-     * @param \Body $parsedBody
-     */
-    public function removeParsedBody(\Body $parsedBody)
-    {
-        $this->parsedBody->removeElement($parsedBody);
-    }
-
-    /**
-     * Get parsedBody
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getParsedBody()
-    {
-        return $this->parsedBody;
     }
 }
 

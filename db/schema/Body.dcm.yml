@@ -25,13 +25,19 @@ Body:
       nullable: true
       options:
         comment: 'Attachment filename'
-    content:
+    content_plain:
       type: string
       nullable: true
       length: 16777215
       options:
-        comment: 'Body decoded content'
-  manyToOne:
+        comment: 'Body PLAIN decoded content'
+    content_html:
+      type: string
+      nullable: true
+      length: 16777215
+      options:
+        comment: 'Body HTML decoded content'
+  oneToOne:
     email:
       targetEntity: Email
       inversedBy: parsedBody
@@ -39,4 +45,4 @@ Body:
       joinColumns:
         email_id:
           referencedColumnName: id
-          onDelete: CASCADE 
+          onDelete: CASCADE

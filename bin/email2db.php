@@ -46,6 +46,10 @@ $entityManager->getConnection()
 // main instance
 $email2db = new Email2DB();
 
+$email2db->parseEmail('email.eml');
+die;
+
+
 foreach (glob("vendor/exorus/php-mime-mail-parser/test/mails/m*") as $filename) {
   $email2db->parseEmail($filename);
 }

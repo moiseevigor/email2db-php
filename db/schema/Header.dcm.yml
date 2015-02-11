@@ -13,6 +13,7 @@ Header:
         comment: 'Header name'
     value:
       type: string
+      length: 4096
       options:
         comment: 'Header value'
   manyToOne:

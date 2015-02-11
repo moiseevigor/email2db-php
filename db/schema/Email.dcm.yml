@@ -58,13 +58,14 @@ Email:
       nullable: false
       options:
         comment: 'Date when email have been saved in db'
+  oneToOne:
+    parsedBody:
+      targetEntity: Body
+      mappedBy: email
   oneToMany:
     parsedHeaders:
       targetEntity: Header
       mappedBy: email
     parsedAttachments:
       targetEntity: Attachment
-      mappedBy: email
-    parsedBody:
-      targetEntity: Body
       mappedBy: email
