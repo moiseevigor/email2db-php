@@ -60,7 +60,7 @@ For MySQL configuration on Ubuntu older 14.04
 sudo apt-get install php5-mysqlnd
 ```
 
-and find the `pdo_mysql` module in the running config, the essential to Doctrine 
+and find the `pdo_mysql` module in the running config, the essential to Doctrine
 
 ```
 $ php -m| grep -i mysql
@@ -70,7 +70,7 @@ mysqlnd
 pdo_mysql
 ```
 
-### Install dependences 
+### Install dependences
 
 Next install all necessary packages
 
