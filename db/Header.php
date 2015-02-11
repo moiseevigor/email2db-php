@@ -110,4 +110,3 @@ class Header
         return $this->email;
     }
 }
-

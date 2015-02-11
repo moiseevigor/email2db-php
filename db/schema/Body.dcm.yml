@@ -9,10 +9,12 @@ Body:
   fields:
     content_type:
       type: string
+      nullable: true
       options:
         comment: 'Body Content Type'
     size_of:
       type: integer
+      nullable: true
       options:
         comment: 'Body size in bytes'
     charset:

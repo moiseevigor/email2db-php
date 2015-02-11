@@ -9,6 +9,7 @@ Email:
   fields:
     message_id:
       type: string
+      nullable: true
       options:
         comment: 'Unique ID of the message'
     from_email:

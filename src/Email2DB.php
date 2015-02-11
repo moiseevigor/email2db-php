@@ -22,20 +22,35 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
+
+
 class Email2DB extends eXorus\PhpMimeMailParser\Parser
 {
-    /**
-     * @var eXorus\PhpMimeMailParser\Parser
-     */
-    private $Parser;
-
     /**
      * Constructor
      *
      * @return null
      */
-    public function __construct()
+    public function __construct($config)
     {
+        $this->config = $config;
+        return $this->init();
+    }
+
+    /**
+     * Init ORM
+     *
+     * @return null
+     */
+    public function init()
+    {
+        $paths = array("db/schema");
+        $isDevMode = true;
+
+        $configDoctrine = Setup::createYAMLMetadataConfiguration($paths, $isDevMode);
+        $this->entityManager = EntityManager::create($this->config['db'], $configDoctrine);
     }
 
     /**
@@ -98,23 +113,97 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
             // Or specify a php file resource (stream) to the mime mail :
             $this->setStream(fopen($file, "r"));
 
-            if($this->saveEmail()) {
-
+            if($email = $this->saveEmail()) {
+                var_dump($email->getId());
+                return $this->saveHeader($email) && $this->saveBody($email) && $this->saveAttachmentsDB($email);
             }
+        }
 
-            var_dump($this->getHeaders());
-            die();
+        return false;
+    }
 
-            // We can get all the necessary data
+    /**
+     * Saves Email object
+     *
+     * @return bool
+     */
+    public function saveEmail()
+    {
+        $email = new Email();
 
-            $text = $this->getMessageBody('text');
-            $html = $this->getMessageBody('html');
-            $htmlEmbedded = $this->getMessageBody('htmlEmbedded'); //HTML Body included data
+        // Get neccesary headers
+        $fromPersonal = $this->parseAddrlist($this->getHeader('from'));
+        $email->setFromEmail($fromPersonal['email']);
+        $email->setFromName($fromPersonal['name']);
 
-            // and the attachments also
-            $attach_dir = '/tmp/';
-            $this->saveAttachments($attach_dir);
+        $toPersonal = $this->parseAddrlist($this->getHeader('to'));
+        $email->setToEmail($toPersonal['email']);
+        $email->setToName($toPersonal['name']);
 
+        $ccPersonal = $this->parseAddrlist($this->getHeader('cc'));
+        $email->setCc($ccPersonal['email']);
+
+        $replyToPersonal = $this->parseAddrlist($this->getHeader('reply-to'));
+        $email->setReplyTo($replyToPersonal['email']);
+
+        $originalRecipientPersonal = $this->parseAddrlist($this->getHeader('original-recipient'));
+        $email->setOriginalRecipient($originalRecipientPersonal['email']);
+
+        $email->setSubject($this->getHeader('subject'));
+        $email->setMessageId($this->getHeader('message-id'));
+
+        $email->setReceivedAt(new DateTime($this->getHeader('date')));
+        $email->setCreatedAt(new DateTime('now'));
+
+        
+        try {
+
+            $this->entityManager->persist($email);
+            $this->entityManager->flush();
+            return $email;
+
+        } catch (Exception $e) {
+            // TODO log error
+            //var_dump($e->getMessage());
+            $this->init();
+            return false;        
+        }
+
+        return false;
+    }
+
+    /**
+     * Parse method
+     *
+     * @return bool
+     */
+    public function saveHeader($email)
+    {
+        $headers = $this->getHeaders();
+
+        if(!is_null($headers) && is_array($headers) && count($headers)>0) {
+            foreach ($headers as $name => $value) {
+                $header = new Header();
+                $header->setName($name);
+                $header->setEmail($email);
+
+                if(is_string($value)) {
+                    $header->setValue($value);
+                } elseif (is_array($value)) {
+                    $header->setValue(json_encode($value));
+                }
+
+                try {
+
+                    $this->entityManager->persist($header);
+                    $this->entityManager->flush();
+
+                } catch (Exception $e) {
+                    // TODO log error
+                    //var_dump($e->getMessage());
+                    $this->init();
+                }
+            }
 
             return true;
         }
@@ -127,45 +216,30 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
      *
      * @return bool
      */
-    public function saveEmail()
+    public function saveBody($email)
     {
-        global $entityManager;
+        $body = new Body();
 
-        $email = new Email();
+        $body->setEmail($email);
+        $body->setContentPlain($this->getMessageBody('text'));
+        $body->setContentHtml($this->getMessageBody('html'));
+        //$htmlEmbedded = $this->getMessageBody('htmlEmbedded');
 
-        // Get neccesary headers
-        $fromPersonal = imap_rfc822_parse_adrlist($this->getHeader('from'), '')[0];
-        $toPersonal = imap_rfc822_parse_adrlist($this->getHeader('to'), '')[0];
-        $ccPersonal = imap_rfc822_parse_adrlist($this->getHeader('cc'), '')[0];
-        $replyToPersonal = imap_rfc822_parse_adrlist($this->getHeader('reply-to'), '')[0];
-        $originalRecipientPersonal = imap_rfc822_parse_adrlist($this->getHeader('original-recipient'), '')[0];
+        try {
 
-        $email->setToEmail($toPersonal->mailbox . '@' . $toPersonal->host);
+            $this->entityManager->persist($body);
+            $this->entityManager->flush();
 
-        if(isset($toPersonal->personal))
-            $email->setToName($toPersonal->personal);
+            return true;
 
-        $email->setFromEmail($fromPersonal->mailbox . '@' . $fromPersonal->host);
+        } catch (Exception $e) {
+            // TODO log error
+            //var_dump($e->getMessage());
+            $this->init();
+            return false;
+        }
 
-        if(isset($fromPersonal->personal))
-            $email->setFromName($fromPersonal->personal);
-
-        $email->setCc($ccPersonal->mailbox . '@' . $ccPersonal->host);
-        $email->setReplyTo($replyToPersonal->mailbox . '@' . $replyToPersonal->host);
-        $email->setOriginalRecipient($originalRecipientPersonal->mailbox . '@' . $originalRecipientPersonal->host);
-
-
-        $email->setSubject($this->getHeader('subject'));
-        $email->setMessageId($this->getHeader('message-id'));
-        $email->setReceivedAt(new DateTime($this->getHeader('date')));
-        $email->setCreatedAt(new DateTime('now'));
-
-        $entityManager->persist($email);
-        $entityManager->flush();
-
-        echo "Created Email with ID " . $email->getId() . "\n";
-
-        return true;
+        return false;
     }
 
     /**
@@ -173,25 +247,30 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
      *
      * @return bool
      */
-    public function saveHeader($file)
+    public function saveAttachmentsDB($email)
     {
     }
 
     /**
-     * Parse method
+     * Parses the rfc822 address list "Person Name" <email@example.com>
      *
-     * @return bool
+     * @return Array(email address, person name)
      */
-    public function saveBody($file)
+    public function parseAddrlist($addrString)
     {
-    }
+        $personal = imap_rfc822_parse_adrlist($addrString, '');
 
-    /**
-     * Parse method
-     *
-     * @return bool
-     */
-    public function saveAttachement($file)
-    {
+        if(!is_null($personal) && is_array($personal) && count($personal)>0) {
+            $personal = $personal[0];
+            return array(
+                'email' => isset($personal->mailbox)? $personal->mailbox . '@' . $personal->host : null,
+                'name' => isset($personal->personal)? $personal->personal : null
+            );
+        }
+
+        return array(
+            'email' => null,
+            'name' => null
+        );
     }
 }
