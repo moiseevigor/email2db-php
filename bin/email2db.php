@@ -40,7 +40,10 @@ $email2db = new Email2DB($config);
 //die;
 
 
-foreach (glob("vendor/exorus/php-mime-mail-parser/test/mails/m*") as $filename) {
+
+foreach (glob("../flanker/tests/fixtures/messages/*.eml") as $filename) {
+//foreach (glob("../official-library-php-email-parser/tests/emails/*") as $filename) {
+//foreach (glob("vendor/exorus/php-mime-mail-parser/test/mails/m*") as $filename) {
   $email2db->parseEmail($filename);
 }
 die();

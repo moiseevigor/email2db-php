@@ -25,7 +25,6 @@
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
-
 class Email2DB extends eXorus\PhpMimeMailParser\Parser
 {
     /**
@@ -115,7 +114,9 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
 
             if($email = $this->saveEmail()) {
                 var_dump($email->getId());
-                return $this->saveHeader($email) && $this->saveBody($email) && $this->saveAttachmentsDB($email);
+                if($this->saveHeader($email) && $this->saveBody($email) && $this->saveAttachmentsDB($email)) {
+                    $this->entityManager->flush();
+                }
             }
         }
 
@@ -155,7 +156,7 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
         $email->setReceivedAt(new DateTime($this->getHeader('date')));
         $email->setCreatedAt(new DateTime('now'));
 
-        
+
         try {
 
             $this->entityManager->persist($email);
@@ -166,7 +167,7 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
             // TODO log error
             //var_dump($e->getMessage());
             $this->init();
-            return false;        
+            return false;
         }
 
         return false;
@@ -196,7 +197,7 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
                 try {
 
                     $this->entityManager->persist($header);
-                    $this->entityManager->flush();
+                    //$this->entityManager->flush();
 
                 } catch (Exception $e) {
                     // TODO log error
@@ -223,12 +224,11 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
         $body->setEmail($email);
         $body->setContentPlain($this->getMessageBody('text'));
         $body->setContentHtml($this->getMessageBody('html'));
-        //$htmlEmbedded = $this->getMessageBody('htmlEmbedded');
 
         try {
 
             $this->entityManager->persist($body);
-            $this->entityManager->flush();
+            //$this->entityManager->flush();
 
             return true;
 
@@ -249,6 +249,7 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
      */
     public function saveAttachmentsDB($email)
     {
+        return true;
     }
 
     /**
