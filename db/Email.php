@@ -457,4 +457,3 @@ class Email
         return $this->parsedAttachments;
     }
 }
-

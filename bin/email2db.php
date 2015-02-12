@@ -27,18 +27,11 @@ $config = require_once('config/config.php');
 require_once('vendor/autoload.php');
 require_once('src/Email2DB.php');
 
-/*
-$entityManager->getConnection()
-  ->getConfiguration()
-  ->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
-*/
-
 // main instance
 $email2db = new Email2DB($config);
 
 //$email2db->parseEmail('email.eml');
 //die;
-
 
 
 foreach (glob("../flanker/tests/fixtures/messages/*.eml") as $filename) {

@@ -50,6 +50,13 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
 
         $configDoctrine = Setup::createYAMLMetadataConfiguration($paths, $isDevMode);
         $this->entityManager = EntityManager::create($this->config['db'], $configDoctrine);
+
+        /*
+        $entityManager->getConnection()
+          ->getConfiguration()
+          ->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+        */
+
     }
 
     /**
@@ -114,7 +121,7 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
 
             if($email = $this->saveEmail()) {
                 var_dump($email->getId());
-                if($this->saveHeader($email) && $this->saveBody($email) && $this->saveAttachmentsDB($email)) {
+                if($this->saveHeader($email) && $this->saveBody($email) && $this->saveAttachment($email)) {
                     $this->entityManager->flush();
                 }
             }
@@ -197,7 +204,6 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
                 try {
 
                     $this->entityManager->persist($header);
-                    //$this->entityManager->flush();
 
                 } catch (Exception $e) {
                     // TODO log error
@@ -228,7 +234,6 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
         try {
 
             $this->entityManager->persist($body);
-            //$this->entityManager->flush();
 
             return true;
 
@@ -247,8 +252,30 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
      *
      * @return bool
      */
-    public function saveAttachmentsDB($email)
+    public function saveAttachment($email)
     {
+        $attachments = $this->getAttachments();
+
+        foreach ($attachments as $key => $attach) {
+            $attachment = new Attachment();
+            $attachment->setContentType($attach->getContentType());
+            $attachment->setFilename($attach->getFilename());
+
+            $content = $attach->getContent();
+            $attachment->setContent($content);
+
+            try {
+
+                $this->entityManager->persist($attachment);
+
+            } catch (Exception $e) {
+                // TODO log error
+                //var_dump($e->getMessage());
+                $this->init();
+                return false;
+            }
+        }
+
         return true;
     }
 

@@ -13,13 +13,9 @@ Attachment:
         comment: 'Attachment Content Type'
     size_of:
       type: integer
-      options:
-        comment: 'Attachment size in bytes'
-    charset:
-      type: string
       nullable: true
       options:
-        comment: 'Body charset encoding'
+        comment: 'Attachment size in bytes'
     filename:
       type: string
       nullable: true

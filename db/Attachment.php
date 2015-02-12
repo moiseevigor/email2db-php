@@ -25,11 +25,6 @@ class Attachment
     /**
      * @var string
      */
-    private $charset;
-
-    /**
-     * @var string
-     */
     private $filename;
 
     /**
@@ -99,30 +94,6 @@ class Attachment
     public function getSizeOf()
     {
         return $this->size_of;
-    }
-
-    /**
-     * Set charset
-     *
-     * @param string $charset
-     *
-     * @return Attachment
-     */
-    public function setCharset($charset)
-    {
-        $this->charset = $charset;
-
-        return $this;
-    }
-
-    /**
-     * Get charset
-     *
-     * @return string
-     */
-    public function getCharset()
-    {
-        return $this->charset;
     }
 
     /**
@@ -197,4 +168,3 @@ class Attachment
         return $this->email;
     }
 }
-
