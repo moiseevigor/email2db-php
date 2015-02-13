@@ -30,6 +30,11 @@ class Attachment
     /**
      * @var string
      */
+    private $hash_content;
+
+    /**
+     * @var string
+     */
     private $content;
 
     /**
@@ -118,6 +123,30 @@ class Attachment
     public function getFilename()
     {
         return $this->filename;
+    }
+
+    /**
+     * Set hashContent
+     *
+     * @param string $hashContent
+     *
+     * @return Attachment
+     */
+    public function setHashContent($hashContent)
+    {
+        $this->hash_content = $hashContent;
+
+        return $this;
+    }
+
+    /**
+     * Get hashContent
+     *
+     * @return string
+     */
+    public function getHashContent()
+    {
+        return $this->hash_content;
     }
 
     /**

@@ -120,14 +120,18 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
             $this->setStream(fopen($file, "r"));
 
             if($email = $this->saveEmail()) {
-                var_dump($email->getId());
                 if($this->saveHeader($email) && $this->saveBody($email) && $this->saveAttachment($email)) {
                     $this->entityManager->flush();
+                    var_dump($email->getId());
+                } else {
+                    // TODO write log on BAD email parsing
                 }
+            } else {
+                // TODO write log on BAD email parsing
             }
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -163,12 +167,12 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
         $email->setReceivedAt(new DateTime($this->getHeader('date')));
         $email->setCreatedAt(new DateTime('now'));
 
+        if(!$this->isOkEmailConstraints($email))
+            return false;
 
         try {
 
             $this->entityManager->persist($email);
-            $this->entityManager->flush();
-            return $email;
 
         } catch (Exception $e) {
             // TODO log error
@@ -177,7 +181,7 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
             return false;
         }
 
-        return false;
+        return $email;
     }
 
     /**
@@ -235,8 +239,6 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
 
             $this->entityManager->persist($body);
 
-            return true;
-
         } catch (Exception $e) {
             // TODO log error
             //var_dump($e->getMessage());
@@ -244,7 +246,7 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
             return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -263,6 +265,7 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
 
             $content = $attach->getContent();
             $attachment->setContent($content);
+            $attachment->setHashContent(sha1($content));
 
             try {
 
@@ -300,5 +303,32 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
             'email' => null,
             'name' => null
         );
+    }
+
+    /**
+     * Check whether the triple (From, To, Subject) not completely NULL
+     *
+     * @param $email \Email
+     * @return bool
+     */
+    public function isOkEmailConstraints($email)
+    {
+        if( is_null($email->getFromEmail()) && is_null($email->getToEmail()) && is_null($email->getSubject()) ) {
+            return false;
+        }
+
+        if( is_null($email->getFromEmail()) ) {
+            $email->setFromEmail('');
+        }
+
+        if( is_null($email->getToEmail()) ) {
+            $email->setToEmail('');
+        }
+
+        if( is_null($email->getSubject()) ) {
+            $email->setSubject('');
+        }
+
+        return true;
     }
 }

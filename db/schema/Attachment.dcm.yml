@@ -21,11 +21,19 @@ Attachment:
       nullable: true
       options:
         comment: 'Attachment filename'
+    hash_content:
+      type: string(40)
+      nullable: true
+      options:
+        comment: 'SHA1 hash of the file for deduplication'
     content:
       type: blob
       nullable: true
       options:
         comment: 'Attachment binary content'
+  indexes:
+    hash_content_idx:
+      columns: [ hash_content ]
   manyToOne:
     email:
       targetEntity: Email
