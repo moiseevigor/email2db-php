@@ -2,7 +2,7 @@ machine:
   php:
     version: 5.4.4
   services:
-  	- mysql
+    - mysql
 dependencies:
   pre:
     - pecl install mailparse; sudo php5enmod mailparse
