@@ -1,6 +1,6 @@
 machine:
   php:
-    version: 5.4.0
+    version: 5.4.4
 dependencies:
   pre:
     - pecl install mailparse
