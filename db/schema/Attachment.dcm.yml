@@ -11,6 +11,16 @@ Attachment:
       type: string
       options:
         comment: 'Attachment Content Type'
+    content_id:
+      type: string
+      nullable: true
+      options:
+        comment: 'Attachments Content ID'
+    content_disposition:
+      type: string
+      nullable: true
+      options:
+        comment: 'Attachments Content Disposition'
     size_of:
       type: integer
       nullable: true

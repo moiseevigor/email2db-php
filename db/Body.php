@@ -13,24 +13,9 @@ class Body
     private $id;
 
     /**
-     * @var string
-     */
-    private $content_type;
-
-    /**
      * @var integer
      */
     private $size_of;
-
-    /**
-     * @var string
-     */
-    private $charset;
-
-    /**
-     * @var string
-     */
-    private $filename;
 
     /**
      * @var string
@@ -59,30 +44,6 @@ class Body
     }
 
     /**
-     * Set contentType
-     *
-     * @param string $contentType
-     *
-     * @return Body
-     */
-    public function setContentType($contentType)
-    {
-        $this->content_type = $contentType;
-
-        return $this;
-    }
-
-    /**
-     * Get contentType
-     *
-     * @return string
-     */
-    public function getContentType()
-    {
-        return $this->content_type;
-    }
-
-    /**
      * Set sizeOf
      *
      * @param integer $sizeOf
@@ -104,54 +65,6 @@ class Body
     public function getSizeOf()
     {
         return $this->size_of;
-    }
-
-    /**
-     * Set charset
-     *
-     * @param string $charset
-     *
-     * @return Body
-     */
-    public function setCharset($charset)
-    {
-        $this->charset = $charset;
-
-        return $this;
-    }
-
-    /**
-     * Get charset
-     *
-     * @return string
-     */
-    public function getCharset()
-    {
-        return $this->charset;
-    }
-
-    /**
-     * Set filename
-     *
-     * @param string $filename
-     *
-     * @return Body
-     */
-    public function setFilename($filename)
-    {
-        $this->filename = $filename;
-
-        return $this;
-    }
-
-    /**
-     * Get filename
-     *
-     * @return string
-     */
-    public function getFilename()
-    {
-        return $this->filename;
     }
 
     /**
@@ -226,3 +139,4 @@ class Body
         return $this->email;
     }
 }
+

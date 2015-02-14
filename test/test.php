@@ -1,7 +1,6 @@
-#!/usr/bin/php
 <?php
 /**
- * email2db executable
+ * tests email2db
  *
  *   Copyright (C) 2011 Igor Moiseev
  *
@@ -30,37 +29,17 @@ require_once('src/Email2DB.php');
 // main instance
 $email2db = new Email2DB($config);
 
-// define the file permissions to 644
-umask(0022);
+//$email2db->parseEmail('email.eml');
+//die;
 
-// get user info from passwd
-$userinfo = posix_getpwuid(posix_getuid());
 
-// Daemon options
-$options = array_merge($config['daemon'], array(
-  "authorName"  => "Igor Moseev",
-  "authorEmail" => "moiseev.igor@gmail.com",
-  "appDir"      => $userinfo["dir"] . "/",
-  "appRunAsUID" => $userinfo["uid"],
-  "appRunAsGID" => $userinfo["gid"],
-  "logLocation"           => "/var/log/email2db.log",
-  "appPidLocation"        => "/var/run/email2db/email2db.pid"
-  ));
-System_Daemon::setOptions($options);
-
-// Spawn Deamon!
-System_Daemon::start();
-
-// daemon GREAT cycle
-while(true)
-{
-  if($email2db->manage()) {
-    sleep(11);
-  } else {
-    sleep(600);
-  }
-
-} // END WHILE
-
-// Stopping daemon
-System_Daemon::stop();
+foreach (glob("../flanker/tests/fixtures/messages/*.eml") as $filename) {
+  $email2db->parseEmail($filename);
+}
+foreach (glob("../official-library-php-email-parser/tests/emails/*") as $filename) {
+  $email2db->parseEmail($filename);
+}
+foreach (glob("vendor/exorus/php-mime-mail-parser/test/mails/m*") as $filename) {
+  $email2db->parseEmail($filename);
+}
+die();

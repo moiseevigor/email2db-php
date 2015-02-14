@@ -18,6 +18,16 @@ class Attachment
     private $content_type;
 
     /**
+     * @var string
+     */
+    private $content_id;
+
+    /**
+     * @var string
+     */
+    private $content_disposition;
+
+    /**
      * @var integer
      */
     private $size_of;
@@ -75,6 +85,54 @@ class Attachment
     public function getContentType()
     {
         return $this->content_type;
+    }
+
+    /**
+     * Set contentId
+     *
+     * @param string $contentId
+     *
+     * @return Attachment
+     */
+    public function setContentId($contentId)
+    {
+        $this->content_id = $contentId;
+
+        return $this;
+    }
+
+    /**
+     * Get contentId
+     *
+     * @return string
+     */
+    public function getContentId()
+    {
+        return $this->content_id;
+    }
+
+    /**
+     * Set contentDisposition
+     *
+     * @param string $contentDisposition
+     *
+     * @return Attachment
+     */
+    public function setContentDisposition($contentDisposition)
+    {
+        $this->content_disposition = $contentDisposition;
+
+        return $this;
+    }
+
+    /**
+     * Get contentDisposition
+     *
+     * @return string
+     */
+    public function getContentDisposition()
+    {
+        return $this->content_disposition;
     }
 
     /**
@@ -197,3 +255,4 @@ class Attachment
         return $this->email;
     }
 }
+

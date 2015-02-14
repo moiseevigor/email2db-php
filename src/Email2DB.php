@@ -260,7 +260,11 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
 
         foreach ($attachments as $key => $attach) {
             $attachment = new Attachment();
+            $attachment->setEmail($email);
+
             $attachment->setContentType($attach->getContentType());
+            $attachment->setContentId($attach->getContentID());
+            $attachment->setContentDisposition($attach->getContentDisposition());
             $attachment->setFilename($attach->getFilename());
 
             $content = $attach->getContent();
@@ -306,7 +310,7 @@ class Email2DB extends eXorus\PhpMimeMailParser\Parser
     }
 
     /**
-     * Check whether the triple (From, To, Subject) not completely NULL
+     * Check whether the triple (From, To, Subject) not completely null
      *
      * @param $email \Email
      * @return bool
