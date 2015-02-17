@@ -5,6 +5,6 @@ machine:
     - mysql
 dependencies:
   pre:
-    - pecl install mailparse
-    - sudo apt-get update; sudo apt-get install php5-imap
+    - pecl install mailparse; sudo php5enmod mailparse
+    - sudo apt-get update; sudo apt-get install php5-imap; sudo php5enmod imap
     - sudo apt-get install php5-mysqlnd

@@ -28,6 +28,16 @@ use Doctrine\ORM\EntityManager;
 class Email2DB extends eXorus\PhpMimeMailParser\Parser
 {
     /**
+     * Config var
+     */
+    private $config = null;
+
+    /**
+     * \EntityManager instance
+     */
+    private $entityManager = null;
+
+    /**
      * Constructor
      *
      * @return null
