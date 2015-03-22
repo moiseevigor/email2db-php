@@ -146,3 +146,7 @@ The [PEAR :: System Daemon](http://pear.php.net/package/System_Daemon) library i
 ## Contributing
 
 Please clone, star and pull request. Please follow the [PSR coding style](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md).
+
+## Help and discussions
+
+Please reach at Gitter [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/moiseevigor/email2db-php?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
