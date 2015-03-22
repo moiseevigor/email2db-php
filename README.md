@@ -1,8 +1,6 @@
 # Email2DB
 
-[![Build Status](https://travis-ci.org/moiseevigor/email2db-php.svg?branch=master)](https://travis-ci.org/moiseevigor/email2db-php)
-
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/moiseevigor/email2db-php?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Build Status](https://travis-ci.org/moiseevigor/email2db-php.svg?branch=master)](https://travis-ci.org/moiseevigor/email2db-php)&nbsp;&nbsp;[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/moiseevigor/email2db-php?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 **ATTENTION! Work in progress, no working release yet!**
 
