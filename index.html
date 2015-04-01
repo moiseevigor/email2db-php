@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Email2db-php by moiseevigor</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Email2db-php</h1>
+        <p>Email parsing and conversion into the relational model</p>
+
+        <p class="view"><a href="https://github.com/moiseevigor/email2db-php">View the Project on GitHub <small>moiseevigor/email2db-php</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/moiseevigor/email2db-php/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/moiseevigor/email2db-php/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/moiseevigor/email2db-php">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="email2db" class="anchor" href="#email2db" aria-hidden="true"><span class="octicon octicon-link"></span></a>Email2DB</h1>
+
+<p><a href="https://travis-ci.org/moiseevigor/email2db-php"><img src="https://travis-ci.org/moiseevigor/email2db-php.svg?branch=master" alt="Build Status"></a>  <a href="https://gitter.im/moiseevigor/email2db-php?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Gitter"></a></p>
+
+<p><strong>ATTENTION! Work in progress, no working release yet!</strong></p>
+
+<p>Email2DB parses the email schema into the relational schema.</p>
+
+<h2>
+<a id="installation-procedure" class="anchor" href="#installation-procedure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation procedure</h2>
+
+<p>We assume the Ubuntu 12.04 and later here on.</p>
+
+<h3>
+<a id="system-wide-installation-procedure" class="anchor" href="#system-wide-installation-procedure" aria-hidden="true"><span class="octicon octicon-link"></span></a>System-wide installation procedure</h3>
+
+<p>Install IMAP extension</p>
+
+<pre><code>sudo apt-get install php5-imap
+</code></pre>
+
+<p>Enable IMAP extensions (creates symlink in <code>/etc/php5/cli/conf.d/</code>)</p>
+
+<pre><code>sudo php5enmod imap
+</code></pre>
+
+<p>Mailparse installation</p>
+
+<pre><code>sudo apt-get install php5-dev
+</code></pre>
+
+<p>Compiling <code>mailparse</code></p>
+
+<pre><code>sudo pecl install mailparse
+</code></pre>
+
+<p>And enabling it</p>
+
+<pre><code>echo "extension=mailparse.so" &gt; /etc/php5/mods-available/mailparse.ini
+</code></pre>
+
+<pre><code>sudo php5enmod mailparse
+</code></pre>
+
+<h3>
+<a id="project-wide-installation-procedure" class="anchor" href="#project-wide-installation-procedure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Project-wide installation procedure</h3>
+
+<p>Install composer</p>
+
+<pre><code>curl -sS https://getcomposer.org/installer | php
+</code></pre>
+
+<h3>
+<a id="configure-database" class="anchor" href="#configure-database" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configure database</h3>
+
+<p>For MySQL configuration on Ubuntu older 14.04</p>
+
+<pre><code>sudo apt-get install php5-mysqlnd
+</code></pre>
+
+<p>and find the <code>pdo_mysql</code> module in the running config, the essential to Doctrine</p>
+
+<pre><code>$ php -m| grep -i mysql
+mysql
+mysqli
+mysqlnd
+pdo_mysql
+</code></pre>
+
+<h3>
+<a id="install-dependences" class="anchor" href="#install-dependences" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install dependences</h3>
+
+<p>Next install all necessary packages</p>
+
+<pre><code>./composer.phar install
+</code></pre>
+
+<p>No errors should be in the output, if there appear some, please check the previous step.</p>
+
+<p>Now check out the configuration</p>
+
+<pre><code>$ ./composer.phar show -p | grep -E "imap|mail"
+ext-imap            0        The imap PHP extension
+ext-mailparse       2.1.6    The mailparse PHP extension
+ext-mysql           1.0      The mysql PHP extension
+ext-mysqli          0.1      The mysqli PHP extension
+ext-mysqlnd         0        The mysqlnd PHP extension
+ext-pdo_mysql       1.0.2    The pdo_mysql PHP extension
+</code></pre>
+
+<h3>
+<a id="configure-doctrine" class="anchor" href="#configure-doctrine" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configure Doctrine</h3>
+
+<pre><code>$ vendor/bin/doctrine orm:schema-tool:create
+
+ATTENTION: This operation should not be executed in a production environment.
+
+Creating database schema...
+Database schema created successfully!
+</code></pre>
+
+<h2>
+<a id="dependences" class="anchor" href="#dependences" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dependences</h2>
+
+<p>Here we describe our decision on dependences</p>
+
+<pre><code>cat composer.json
+
+...
+  "require": {
+    "php": "&gt;=5.3.0",
+    "phing/phing" : "2.*",
+    "pear-pear.php.net/pear": "*",
+    "pear/System_Daemon": "*@dev",
+    "pear/pear_exception": "*@beta",
+    "pear/Log": "*",
+    "exorus/php-mime-mail-parser": "dev-master",
+    "doctrine/orm": "*",
+    "ext-imap": "*"
+  },
+...
+</code></pre>
+
+<h3>
+<a id="orm--doctrine" class="anchor" href="#orm--doctrine" aria-hidden="true"><span class="octicon octicon-link"></span></a>ORM :: Doctrine</h3>
+
+<p>For the database interaction we choose <a href="http://doctrine-orm.readthedocs.org/">Doctrine</a>, we find it to be the most reliable and the most flexible version of open ORM. 
+It can intercat with variety of RDBMS and NoSQL databases and can exploit tailable capabilities of some databases like <a href="https://github.com/doctrine/doctrine-mongodb-odm-tailable-cursor-bundle">MongoDB</a>.</p>
+
+<h3>
+<a id="pear--system-daemon" class="anchor" href="#pear--system-daemon" aria-hidden="true"><span class="octicon octicon-link"></span></a>PEAR :: System Daemon</h3>
+
+<p>The <a href="http://pear.php.net/package/System_Daemon">PEAR :: System Daemon</a> library is used to run Email2DB as a daemon in background.</p>
+
+<h3>
+<a id="pecl--mailparse" class="anchor" href="#pecl--mailparse" aria-hidden="true"><span class="octicon octicon-link"></span></a>PECL :: Mailparse</h3>
+
+<p><a href="http://pecl.php.net/package/mailparse">PECL :: Mailparse</a> is an extension for parsing and working with email messages. It can deal with RFC822 and RFC2045 (MIME) compliant messages.</p>
+
+<h3>
+<a id="php--imap" class="anchor" href="#php--imap" aria-hidden="true"><span class="octicon octicon-link"></span></a>PHP :: IMAP</h3>
+
+<p><a href="http://php.net/manual/en/book.imap.php">PHP :: IMAP</a> is the most comprehensive PHP library to operate with the IMAP protocol, as well as the NNTP, POP3 and local mailbox.</p>
+
+<h3>
+<a id="php-mime-mail-parser" class="anchor" href="#php-mime-mail-parser" aria-hidden="true"><span class="octicon octicon-link"></span></a>PHP Mime Mail Parser</h3>
+
+<p><a href="https://code.google.com/p/php-mime-mail-parser/">PHP Mime Mail Parser</a> is used to parse the Mime messages in the version maintained by <a href="https://github.com/eXorus/php-mime-mail-parser">@eXorus</a>.</p>
+
+<h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>Please clone, star and pull request. Please follow the <a href="https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md">PSR coding style</a>.</p>
+
+<h2>
+<a id="help-and-discussions" class="anchor" href="#help-and-discussions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Help and discussions</h2>
+
+<p>Please reach at Gitter <a href="https://gitter.im/moiseevigor/email2db-php?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Gitter"></a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/moiseevigor">moiseevigor</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
