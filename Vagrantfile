@@ -77,14 +77,46 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-    apt-get update
-    apt-get install -y php5-cli php5-curl php5-mcrypt php5-mysqlnd php5-readline php-pear
-    apt-get install php5-imap
+    # UPDATE PACKAGES
+    #apt-get update
+    cd /vagrant
+
+    # INSTALL DB SERVER
+    # http://docs.travis-ci.com/user/database-setup/
+    # https://github.com/doctrine/doctrine2/blob/master/run-all.sh
+    # mysql; pgsql; sqlite
+    DBENGINE=mysql 
+    APPENV=local
+    DBHOST=localhost
+    DBUSER=root
+    DBPASSWD=password
+    DBNAME=email2db
+
+    echo "mysql-server mysql-server/root_password password $DBPASSWD" | debconf-set-selections
+    echo "mysql-server mysql-server/root_password_again password $DBPASSWD" | debconf-set-selections
+    apt-get install -y mysql-server mysql-server-5.5
+
+    sh -c "if [ '$DBENGINE' = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS $DBNAME;' -U postgres; fi"
+    sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql --user=$DBUSER --password=$DBPASSWD -e 'DROP DATABASE IF EXISTS $DBNAME;'; fi"
+
+    sh -c "if [ '$DBENGINE' = 'pgsql' ]; then psql -c 'CREATE DATABASE $DBNAME;' -U postgres; fi"
+    sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql --user=$DBUSER --password=$DBPASSWD -e 'CREATE DATABASE IF NOT EXISTS $DBNAME;'; fi"
+
+    # INSTALL PHP
+    apt-get install -y php5-cli php5-curl php5-mcrypt php5-mysqlnd php5-readline php5-dev php5-imap php-pear 
     php5enmod imap
-    apt-get install php5-dev
+
+    # INSTALL MAILPARSE
     pecl install mailparse
     echo "extension=mailparse.so" > /etc/php5/mods-available/mailparse.ini
     php5enmod mailparse
+
+    # GET COMPOSER
+    curl -sS https://getcomposer.org/installer | php
+    ./composer.phar install
+
+    # INIT DOCTRINE DB
+    vendor/bin/doctrine orm:schema-tool:create
   SHELL
   #config.vm.provision :shell, path: "bootstrap.sh"
 end

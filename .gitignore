@@ -5,3 +5,5 @@ email2db.log
 log/*.log
 db/old
 db/*.php~
+.vagrant/
+*sublime*

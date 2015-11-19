@@ -10,7 +10,7 @@ return array(
     'driver'    => 'pdo_mysql',
     'host'      => 'localhost',
     'user'      => 'root',
-    'password'  => 'password',
+    'password'  => 'password', // CHANGE ME!!!!!
     'port'      => '3306',
     'dbname'    => 'email2db'
     ),
