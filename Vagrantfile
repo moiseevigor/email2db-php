@@ -78,7 +78,7 @@ Vagrant.configure(2) do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     # UPDATE PACKAGES
-    #apt-get update
+    apt-get update
     cd /vagrant
 
     # INSTALL DB SERVER
@@ -118,5 +118,4 @@ Vagrant.configure(2) do |config|
     # INIT DOCTRINE DB
     vendor/bin/doctrine orm:schema-tool:create
   SHELL
-  #config.vm.provision :shell, path: "bootstrap.sh"
 end

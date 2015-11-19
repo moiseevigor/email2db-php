@@ -1,8 +1,8 @@
 <?php
 /**
- * tests email2db
+ * Tests for email2db
  *
- *   Copyright (C) 2011 Igor Moiseev
+ *   Copyright (C) 2015 Igor Moiseev
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
