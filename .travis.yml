@@ -16,21 +16,21 @@ env:
   - DBNAME=email2db
 
 before_script:
-  - echo "mysql-server mysql-server/root_password password $DBPASSWD" | debconf-set-selections
-  - echo "mysql-server mysql-server/root_password_again password $DBPASSWD" | debconf-set-selections
-  - apt-get install -y mysql-server mysql-server-5.5
-  - sh -c "if [ '$DBENGINE' = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS $DBNAME;' -U postgres; fi"
-  - sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql --user=$DBUSER --password=$DBPASSWD -e 'DROP DATABASE IF EXISTS $DBNAME;'; fi"
-  - sh -c "if [ '$DBENGINE' = 'pgsql' ]; then psql -c 'CREATE DATABASE $DBNAME;' -U postgres; fi"
-  - sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql --user=$DBUSER --password=$DBPASSWD -e 'CREATE DATABASE IF NOT EXISTS $DBNAME;'; fi"
-  - apt-get install -y php5-cli php5-curl php5-mcrypt php5-mysqlnd php5-readline php5-dev php5-imap php-pear 
-  - php5enmod imap
-  - pecl install mailparse
-  - echo "extension=mailparse.so" > /etc/php5/mods-available/mailparse.ini
-  - php5enmod mailparse
-  - curl -sS https://getcomposer.org/installer | php
-  - ./composer.phar install
-  - vendor/bin/doctrine orm:schema-tool:create
+  - sudo echo "mysql-server mysql-server/root_password password $DBPASSWD" | debconf-set-selections
+  - sudo echo "mysql-server mysql-server/root_password_again password $DBPASSWD" | debconf-set-selections
+  - sudo apt-get install -y mysql-server mysql-server-5.5
+  - sudo sh -c "if [ '$DBENGINE' = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS $DBNAME;' -U postgres; fi"
+  - sudo sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql --user=$DBUSER --password=$DBPASSWD -e 'DROP DATABASE IF EXISTS $DBNAME;'; fi"
+  - sudo sh -c "if [ '$DBENGINE' = 'pgsql' ]; then psql -c 'CREATE DATABASE $DBNAME;' -U postgres; fi"
+  - sudo sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql --user=$DBUSER --password=$DBPASSWD -e 'CREATE DATABASE IF NOT EXISTS $DBNAME;'; fi"
+  - sudo apt-get install -y php5-cli php5-curl php5-mcrypt php5-mysqlnd php5-readline php5-dev php5-imap php-pear 
+  - sudo php5enmod imap
+  - sudo pecl install mailparse
+  - sudo echo "extension=mailparse.so" > /etc/php5/mods-available/mailparse.ini
+  - sudo php5enmod mailparse
+  - sudo curl -sS https://getcomposer.org/installer | php
+  - sudo ./composer.phar install
+  - sudo vendor/bin/doctrine orm:schema-tool:create
 
 script:
   #- ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS
